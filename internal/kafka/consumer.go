@@ -77,38 +77,43 @@ func (c *Consumer) Run(ctx context.Context) error {
 		}
 		backoff = 200 * time.Millisecond
 
-		var report model.StormReport
-		if err := json.Unmarshal(msg.Value, &report); err != nil {
-			c.logger.Error("unmarshal kafka message", "error", err, "offset", msg.Offset)
-			c.metrics.KafkaConsumerErrors.WithLabelValues(c.topic, "unmarshal").Inc()
-			// Commit bad messages to avoid reprocessing poison pills
-			if err := c.reader.CommitMessages(ctx, msg); err != nil {
-				c.logger.Error("commit offset after unmarshal error", "error", err)
-			}
-			continue
-		}
-
-		if ctx.Err() != nil {
+		if c.handleMessage(ctx, msg) {
 			return nil
 		}
-
-		if err := c.store.InsertStormReport(ctx, &report); err != nil {
-			c.logger.Error("insert storm report", "error", err, "id", report.ID)
-			c.metrics.KafkaConsumerErrors.WithLabelValues(c.topic, "insert").Inc()
-			if ctx.Err() != nil {
-				return nil
-			}
-			// Don't commit — message will be retried on next startup
-			continue
-		}
-
-		if err := c.reader.CommitMessages(ctx, msg); err != nil {
-			c.logger.Error("commit offset", "error", err, "id", report.ID)
-		}
-
-		c.metrics.KafkaMessagesConsumed.WithLabelValues(c.topic).Inc()
-		c.logger.Debug("consumed storm report", "id", report.ID, "type", report.Type)
 	}
+}
+
+// handleMessage processes a single Kafka message: unmarshal, insert, commit.
+// Returns true if the consumer should stop (context cancelled).
+func (c *Consumer) handleMessage(ctx context.Context, msg kafkago.Message) bool {
+	var report model.StormReport
+	if err := json.Unmarshal(msg.Value, &report); err != nil {
+		c.logger.Error("unmarshal kafka message", "error", err, "offset", msg.Offset)
+		c.metrics.KafkaConsumerErrors.WithLabelValues(c.topic, "unmarshal").Inc()
+		// Commit bad messages to avoid reprocessing poison pills
+		if err := c.reader.CommitMessages(ctx, msg); err != nil {
+			c.logger.Error("commit offset after unmarshal error", "error", err)
+		}
+		return false
+	}
+
+	if ctx.Err() != nil {
+		return true
+	}
+
+	if err := c.store.InsertStormReport(ctx, &report); err != nil {
+		c.logger.Error("insert storm report", "error", err, "id", report.ID)
+		c.metrics.KafkaConsumerErrors.WithLabelValues(c.topic, "insert").Inc()
+		return ctx.Err() != nil
+	}
+
+	if err := c.reader.CommitMessages(ctx, msg); err != nil {
+		c.logger.Error("commit offset", "error", err, "id", report.ID)
+	}
+
+	c.metrics.KafkaMessagesConsumed.WithLabelValues(c.topic).Inc()
+	c.logger.Debug("consumed storm report", "id", report.ID, "type", report.Type)
+	return false
 }
 
 // Close shuts down the underlying Kafka reader.

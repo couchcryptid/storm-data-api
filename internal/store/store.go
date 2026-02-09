@@ -53,6 +53,14 @@ func (s *Store) InsertStormReport(ctx context.Context, report *model.StormReport
 	return err
 }
 
+// buildWhereSQL joins the clauses into a WHERE fragment (empty string if no clauses).
+func buildWhereSQL(clauses []string) string {
+	if len(clauses) == 0 {
+		return ""
+	}
+	return " WHERE " + strings.Join(clauses, " AND ")
+}
+
 // buildWhereClause constructs the WHERE clause and args from a filter.
 // Returns the clauses, args, and the next parameter index.
 func buildWhereClause(filter *model.StormReportFilter) ([]string, []any, int) {
@@ -148,10 +156,7 @@ func (s *Store) ListStormReports(ctx context.Context, filter *model.StormReportF
 	defer s.observeQuery("list", time.Now())
 	where, baseArgs, idx := buildWhereClause(filter)
 
-	whereSQL := ""
-	if len(where) > 0 {
-		whereSQL = " WHERE " + strings.Join(where, " AND ")
-	}
+	whereSQL := buildWhereSQL(where)
 
 	// Count total matching rows
 	countQuery := "SELECT COUNT(*) FROM storm_reports" + whereSQL
@@ -208,10 +213,7 @@ func (s *Store) CountByType(ctx context.Context, filter *model.StormReportFilter
 	defer s.observeQuery("count_by_type", time.Now())
 	where, args, _ := buildWhereClause(filter)
 
-	whereSQL := ""
-	if len(where) > 0 {
-		whereSQL = " WHERE " + strings.Join(where, " AND ")
-	}
+	whereSQL := buildWhereSQL(where)
 
 	query := `SELECT type, COUNT(*) AS cnt, MAX(magnitude) AS max_mag
 		FROM storm_reports` + whereSQL + `
@@ -239,10 +241,7 @@ func (s *Store) CountByState(ctx context.Context, filter *model.StormReportFilte
 	defer s.observeQuery("count_by_state", time.Now())
 	where, args, _ := buildWhereClause(filter)
 
-	whereSQL := ""
-	if len(where) > 0 {
-		whereSQL = " WHERE " + strings.Join(where, " AND ")
-	}
+	whereSQL := buildWhereSQL(where)
 
 	query := `SELECT location_state, location_county, COUNT(*) AS cnt
 		FROM storm_reports` + whereSQL + `
@@ -291,10 +290,7 @@ func (s *Store) CountByHour(ctx context.Context, filter *model.StormReportFilter
 	defer s.observeQuery("count_by_hour", time.Now())
 	where, args, _ := buildWhereClause(filter)
 
-	whereSQL := ""
-	if len(where) > 0 {
-		whereSQL = " WHERE " + strings.Join(where, " AND ")
-	}
+	whereSQL := buildWhereSQL(where)
 
 	query := `SELECT time_bucket, COUNT(*) AS cnt
 		FROM storm_reports` + whereSQL + `

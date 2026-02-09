@@ -1,6 +1,6 @@
 //go:build integration
 
-package integration
+package integration_test
 
 import (
 	"context"
@@ -25,6 +25,13 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	tcKafka "github.com/testcontainers/testcontainers-go/modules/kafka"
 	"github.com/testcontainers/testcontainers-go/wait"
+)
+
+const (
+	testReportMsg  = "report %s"
+	testKafkaTopic = "transformed-weather-data"
+	contentJSON    = "application/json"
+	graphQLPath    = "/query"
 )
 
 // discardLogger returns a logger that discards all output.
@@ -123,7 +130,7 @@ func TestStoreInsertAndQuery(t *testing.T) {
 	txReports, _, err := s.ListStormReports(ctx, f)
 	require.NoError(t, err)
 	for _, r := range txReports {
-		assert.Equal(t, "TX", r.Location.State, "report %s", r.ID)
+		assert.Equal(t, "TX", r.Location.State, testReportMsg, r.ID)
 	}
 
 	// Filter by geo radius (around Fort Worth, TX area)
@@ -229,8 +236,8 @@ func TestStoreFilters(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, 4, count)
 		for _, r := range reports {
-			require.NotNil(t, r.Severity, "report %s", r.ID)
-			assert.Equal(t, "severe", *r.Severity, "report %s", r.ID)
+			require.NotNil(t, r.Severity, testReportMsg, r.ID)
+			assert.Equal(t, "severe", *r.Severity, testReportMsg, r.ID)
 		}
 	})
 
@@ -249,7 +256,7 @@ func TestStoreFilters(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, 4, count)
 		for _, r := range reports {
-			assert.Equal(t, "Tarrant", r.Location.County, "report %s", r.ID)
+			assert.Equal(t, "Tarrant", r.Location.County, testReportMsg, r.ID)
 		}
 	})
 
@@ -261,7 +268,7 @@ func TestStoreFilters(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, 6, count)
 		for _, r := range reports {
-			assert.GreaterOrEqual(t, r.Magnitude, 1.75, "report %s", r.ID)
+			assert.GreaterOrEqual(t, r.Magnitude, 1.75, testReportMsg, r.ID)
 		}
 	})
 
@@ -274,10 +281,10 @@ func TestStoreFilters(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, 2, count)
 		for _, r := range reports {
-			assert.Equal(t, "hail", r.Type, "report %s", r.ID)
-			assert.Equal(t, "TX", r.Location.State, "report %s", r.ID)
-			require.NotNil(t, r.Severity, "report %s", r.ID)
-			assert.Equal(t, "severe", *r.Severity, "report %s", r.ID)
+			assert.Equal(t, "hail", r.Type, testReportMsg, r.ID)
+			assert.Equal(t, "TX", r.Location.State, testReportMsg, r.ID)
+			require.NotNil(t, r.Severity, testReportMsg, r.ID)
+			assert.Equal(t, "severe", *r.Severity, testReportMsg, r.ID)
 		}
 	})
 
@@ -396,7 +403,7 @@ func TestGraphQLAggregations(t *testing.T) {
 
 	body := `{"query":"{ stormReports(filter: { beginTimeAfter: \"2020-01-01T00:00:00Z\", beginTimeBefore: \"2030-01-01T00:00:00Z\" }) { totalCount byType { type count maxMagnitude } byState { state count counties { county count } } byHour { bucket count } lastUpdated dataLagMinutes } }"}`
 
-	resp, err := http.Post(srv.URL+"/query", "application/json", strings.NewReader(body))
+	resp, err := http.Post(srv.URL+graphQLPath, contentJSON, strings.NewReader(body))
 	require.NoError(t, err)
 	defer resp.Body.Close()
 
@@ -482,7 +489,7 @@ func TestKafkaConsumerIntegration(t *testing.T) {
 	conn, err := kafkago.Dial("tcp", broker)
 	require.NoError(t, err, "dial kafka")
 	err = conn.CreateTopics(kafkago.TopicConfig{
-		Topic:             "transformed-weather-data",
+		Topic:             testKafkaTopic,
 		NumPartitions:     1,
 		ReplicationFactor: 1,
 	})
@@ -493,7 +500,7 @@ func TestKafkaConsumerIntegration(t *testing.T) {
 	reports := loadMockReports(t)
 	writer := &kafkago.Writer{
 		Addr:  kafkago.TCP(broker),
-		Topic: "transformed-weather-data",
+		Topic: testKafkaTopic,
 	}
 	defer writer.Close()
 
@@ -507,7 +514,7 @@ func TestKafkaConsumerIntegration(t *testing.T) {
 	// Start consumer
 	consumer := kafkago.NewReader(kafkago.ReaderConfig{
 		Brokers: []string{broker},
-		Topic:   "transformed-weather-data",
+		Topic:   testKafkaTopic,
 		GroupID: "test-group",
 	})
 	defer consumer.Close()
@@ -552,7 +559,7 @@ func TestGraphQLEndpoint(t *testing.T) {
 	defer srv.Close()
 
 	body := `{"query":"{ stormReports(filter: { beginTimeAfter: \"2020-01-01T00:00:00Z\", beginTimeBefore: \"2030-01-01T00:00:00Z\" }) { reports { id type magnitude } totalCount } }"}`
-	resp, err := http.Post(srv.URL+"/query", "application/json", strings.NewReader(body))
+	resp, err := http.Post(srv.URL+graphQLPath, contentJSON, strings.NewReader(body))
 	require.NoError(t, err)
 	defer resp.Body.Close()
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
@@ -575,7 +582,7 @@ func TestGraphQLEndpoint(t *testing.T) {
 
 	// Query with filter (hail only)
 	body = `{"query":"{ stormReports(filter: { beginTimeAfter: \"2020-01-01T00:00:00Z\", beginTimeBefore: \"2030-01-01T00:00:00Z\", types: [\"hail\"] }) { reports { id type } totalCount } }"}`
-	resp2, err := http.Post(srv.URL+"/query", "application/json", strings.NewReader(body))
+	resp2, err := http.Post(srv.URL+graphQLPath, contentJSON, strings.NewReader(body))
 	require.NoError(t, err)
 	defer resp2.Body.Close()
 
