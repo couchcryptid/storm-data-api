@@ -1,1 +1,1 @@
-Storm Data GraphQL API -
+Storm Data GraphQL API

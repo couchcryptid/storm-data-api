@@ -5,4 +5,5 @@
 - [[Data Model]]
 - [[API Reference]]
 - [[Configuration]]
+- [[Performance]]
 - [[Testing]]

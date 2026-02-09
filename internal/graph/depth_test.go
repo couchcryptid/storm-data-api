@@ -40,7 +40,7 @@ func TestQueryDepth(t *testing.T) {
 }
 
 func TestDepthLimitValidate(t *testing.T) {
-	if err := (DepthLimit{MaxDepth: 0}).Validate(nil); err == nil {
+	if (DepthLimit{MaxDepth: 0}).Validate(nil) == nil {
 		t.Error("expected error for MaxDepth=0")
 	}
 	if err := (DepthLimit{MaxDepth: 7}).Validate(nil); err != nil {

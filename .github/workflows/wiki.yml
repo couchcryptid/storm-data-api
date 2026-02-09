@@ -9,8 +9,7 @@ on:
       - main
   workflow_dispatch:
 
-permissions:
-  contents: write
+permissions: {}
 
 jobs:
   check-docs:
@@ -44,6 +43,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: check-docs
     if: needs.check-docs.outputs.docs_changed == 'true'
+    permissions:
+      contents: write
     env:
       WIKI_TOKEN: ${{ secrets.WIKI_TOKEN }}
     steps:
