@@ -9,39 +9,46 @@ import (
 
 // ─── Core types ─────────────────────────────────────────────
 
-// StormReport represents a single severe weather event persisted in the database.
-// Flat json tags are kept for Kafka deserialization compatibility; GraphQL fields
-// like measurement and eventType are served by field resolvers.
+// StormReport represents a single severe weather event consumed from Kafka and
+// persisted in the database.
+//
+// Nesting strategy (mirrors the ETL domain model):
+//   - Geo, Location, Measurement, and Geocoding are nested structs matching
+//     the Kafka wire format. This allows json.Unmarshal to deserialize enriched
+//     events automatically, and gqlgen auto-resolves the corresponding GraphQL
+//     types without field resolvers. The store layer flattens these to prefixed
+//     DB columns (geo_lat, measurement_magnitude, geocoding_formatted_address,
+//     etc.) for relational storage and indexing.
+//   - EventType exists only in the GraphQL schema and is served by a field
+//     resolver that maps the DB "type" column.
 type StormReport struct {
-	ID           string    `json:"id"`
-	Type         string    `json:"type"`
-	Geo          Geo       `json:"geo"`
-	Magnitude    float64   `json:"magnitude"`
-	Unit         string    `json:"unit"`
-	BeginTime    time.Time `json:"begin_time"`
-	EndTime      time.Time `json:"end_time"`
-	Source       string    `json:"source"`
-	Location     Location  `json:"location"`
-	Comments     string    `json:"comments"`
-	Severity     *string   `json:"severity,omitempty"`
-	SourceOffice string    `json:"source_office"`
-	TimeBucket   time.Time `json:"time_bucket"`
-	ProcessedAt  time.Time `json:"processed_at"`
-
-	// Geocoding enrichment fields.
-	FormattedAddress string  `json:"formatted_address"`
-	PlaceName        string  `json:"place_name"`
-	GeoConfidence    float64 `json:"geo_confidence"`
-	GeoSource        string  `json:"geo_source"`
+	ID           string      `json:"id"`
+	Type         string      `json:"type"`
+	Geo          Geo         `json:"geo"`
+	Measurement  Measurement `json:"measurement"`
+	BeginTime    time.Time   `json:"begin_time"`
+	EndTime      time.Time   `json:"end_time"`
+	Source       string      `json:"source"`
+	Location     Location    `json:"location"`
+	Comments     string      `json:"comments"`
+	SourceOffice string      `json:"source_office"`
+	TimeBucket   time.Time   `json:"time_bucket"`
+	ProcessedAt  time.Time   `json:"processed_at"`
+	Geocoding    Geocoding   `json:"geocoding,omitempty"`
 }
 
-// Geo holds latitude and longitude coordinates.
+// Geo holds latitude and longitude coordinates. Nested as a struct because
+// lat/lon are always used together and map directly to the GraphQL Geo type.
+// Flattened to geo_lat/geo_lon columns in the database for spatial indexing.
 type Geo struct {
 	Lat float64 `json:"lat"`
 	Lon float64 `json:"lon"`
 }
 
-// Location describes where a storm event occurred.
+// Location describes where a storm event occurred. Nested as a struct because
+// these fields are tightly coupled: the ETL parses raw NWS format into components,
+// and they travel together through the pipeline. Flattened to location_* columns
+// in the database.
 type Location struct {
 	Raw       string   `json:"raw"`
 	Name      string   `json:"name"`
@@ -52,10 +59,22 @@ type Location struct {
 }
 
 // Measurement groups magnitude, unit, and severity for a storm report.
+// Nested on StormReport to match the Kafka wire format; gqlgen auto-resolves
+// the GraphQL Measurement type. Flattened to measurement_* DB columns.
 type Measurement struct {
 	Magnitude float64 `json:"magnitude"`
 	Unit      string  `json:"unit"`
 	Severity  *string `json:"severity,omitempty"`
+}
+
+// Geocoding holds enrichment metadata from the geocoding process.
+// Nested on StormReport to match the Kafka wire format; gqlgen auto-resolves
+// the GraphQL Geocoding type. Flattened to geocoding_* DB columns.
+type Geocoding struct {
+	FormattedAddress string  `json:"formatted_address"`
+	PlaceName        string  `json:"place_name"`
+	Confidence       float64 `json:"confidence"`
+	Source           string  `json:"source"`
 }
 
 // ─── Enums ──────────────────────────────────────────────────

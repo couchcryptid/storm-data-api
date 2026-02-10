@@ -13,12 +13,12 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-const columns = `id, type, geo_lat, geo_lon, magnitude, unit,
+const columns = `id, type, geo_lat, geo_lon, measurement_magnitude, measurement_unit,
 	begin_time, end_time, source,
 	location_raw, location_name, location_distance, location_direction,
 	location_state, location_county,
-	comments, severity, source_office, time_bucket, processed_at,
-	formatted_address, place_name, geo_confidence, geo_source`
+	comments, measurement_severity, source_office, time_bucket, processed_at,
+	geocoding_formatted_address, geocoding_place_name, geocoding_confidence, geocoding_source`
 
 // Store provides persistence operations for storm reports backed by PostgreSQL.
 type Store struct {
@@ -43,15 +43,15 @@ func (s *Store) InsertStormReport(ctx context.Context, report *model.StormReport
 		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)
 		ON CONFLICT (id) DO NOTHING`,
 		report.ID, report.Type, report.Geo.Lat, report.Geo.Lon,
-		report.Magnitude, report.Unit,
+		report.Measurement.Magnitude, report.Measurement.Unit,
 		report.BeginTime, report.EndTime, report.Source,
 		report.Location.Raw, report.Location.Name,
 		report.Location.Distance, report.Location.Direction,
 		report.Location.State, report.Location.County,
-		report.Comments, report.Severity, report.SourceOffice,
+		report.Comments, report.Measurement.Severity, report.SourceOffice,
 		report.TimeBucket, report.ProcessedAt,
-		report.FormattedAddress, report.PlaceName,
-		report.GeoConfidence, report.GeoSource,
+		report.Geocoding.FormattedAddress, report.Geocoding.PlaceName,
+		report.Geocoding.Confidence, report.Geocoding.Source,
 	)
 	return err
 }
@@ -106,12 +106,12 @@ func buildWhereClause(filter *model.StormReportFilter) ([]string, []any, int) {
 			idx++
 		}
 		if len(filter.Severity) > 0 {
-			where = append(where, fmt.Sprintf("severity = ANY($%d)", idx))
+			where = append(where, fmt.Sprintf("measurement_severity = ANY($%d)", idx))
 			args = append(args, severityDBValues(filter.Severity))
 			idx++
 		}
 		if filter.MinMagnitude != nil {
-			where = append(where, fmt.Sprintf("magnitude >= $%d", idx))
+			where = append(where, fmt.Sprintf("measurement_magnitude >= $%d", idx))
 			args = append(args, *filter.MinMagnitude)
 			idx++
 		}
@@ -207,12 +207,12 @@ func buildEventTypeConditions(filter *model.StormReportFilter, args []any, idx i
 		idx++
 
 		if len(tc.severity) > 0 {
-			parts = append(parts, fmt.Sprintf("severity = ANY($%d)", idx))
+			parts = append(parts, fmt.Sprintf("measurement_severity = ANY($%d)", idx))
 			args = append(args, severityDBValues(tc.severity))
 			idx++
 		}
 		if tc.minMag != nil {
-			parts = append(parts, fmt.Sprintf("magnitude >= $%d", idx))
+			parts = append(parts, fmt.Sprintf("measurement_magnitude >= $%d", idx))
 			args = append(args, *tc.minMag)
 			idx++
 		}
@@ -305,7 +305,7 @@ func sortColumn(sf model.SortField) string {
 	case model.SortFieldBeginTime:
 		return "begin_time"
 	case model.SortFieldMagnitude:
-		return "magnitude"
+		return "measurement_magnitude"
 	case model.SortFieldLocationState:
 		return "location_state"
 	case model.SortFieldEventType:
@@ -401,11 +401,11 @@ func (s *Store) Aggregations(ctx context.Context, filter *model.StormReportFilte
 
 	query := `WITH base AS (
 			SELECT type, location_state, location_county,
-				   magnitude, severity, time_bucket
+				   measurement_magnitude, measurement_severity, time_bucket
 			FROM storm_reports` + whereSQL + `
 		)
 		SELECT 'type' AS agg, type AS key1, NULL AS key2,
-			   COUNT(*) AS count, MAX(magnitude) AS max_mag, NULL AS max_sev, NULL::timestamptz AS bucket
+			   COUNT(*) AS count, MAX(measurement_magnitude) AS max_mag, NULL AS max_sev, NULL::timestamptz AS bucket
 		FROM base GROUP BY type
 		UNION ALL
 		SELECT 'state', location_state, location_county,
@@ -511,15 +511,15 @@ func scanStormReport(row scannable) (*model.StormReport, error) {
 	var r model.StormReport
 	err := row.Scan(
 		&r.ID, &r.Type, &r.Geo.Lat, &r.Geo.Lon,
-		&r.Magnitude, &r.Unit,
+		&r.Measurement.Magnitude, &r.Measurement.Unit,
 		&r.BeginTime, &r.EndTime, &r.Source,
 		&r.Location.Raw, &r.Location.Name,
 		&r.Location.Distance, &r.Location.Direction,
 		&r.Location.State, &r.Location.County,
-		&r.Comments, &r.Severity, &r.SourceOffice,
+		&r.Comments, &r.Measurement.Severity, &r.SourceOffice,
 		&r.TimeBucket, &r.ProcessedAt,
-		&r.FormattedAddress, &r.PlaceName,
-		&r.GeoConfidence, &r.GeoSource,
+		&r.Geocoding.FormattedAddress, &r.Geocoding.PlaceName,
+		&r.Geocoding.Confidence, &r.Geocoding.Source,
 	)
 	if err == pgx.ErrNoRows {
 		return nil, nil

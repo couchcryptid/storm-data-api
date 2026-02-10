@@ -81,15 +81,6 @@ func (r *stormReportResolver) EventType(ctx context.Context, obj *model.StormRep
 	return obj.Type, nil
 }
 
-// Measurement is the resolver for the measurement field.
-func (r *stormReportResolver) Measurement(ctx context.Context, obj *model.StormReport) (*model.Measurement, error) {
-	return &model.Measurement{
-		Magnitude: obj.Magnitude,
-		Unit:      obj.Unit,
-		Severity:  obj.Severity,
-	}, nil
-}
-
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 

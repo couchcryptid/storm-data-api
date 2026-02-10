@@ -6,8 +6,11 @@
       "lat": 31.02,
       "lon": -98.44
     },
-    "magnitude": 1.25,
-    "unit": "in",
+    "measurement": {
+      "magnitude": 1.25,
+      "unit": "in",
+      "severity": "moderate"
+    },
     "begin_time": "2024-04-26T15:10:00Z",
     "end_time": "2024-04-26T15:10:00Z",
     "source": "mock",
@@ -20,7 +23,6 @@
       "county": "San Saba"
     },
     "comments": "1.25 inch hail reported at Colorado Bend State Park. (SJT)",
-    "severity": "moderate",
     "source_office": "SJT",
     "time_bucket": "2024-04-26T15:00:00Z",
     "processed_at": "2024-04-26T22:00:00Z"
@@ -32,8 +34,11 @@
       "lat": 32.5,
       "lon": -97.29
     },
-    "magnitude": 1,
-    "unit": "in",
+    "measurement": {
+      "magnitude": 1,
+      "unit": "in",
+      "severity": "moderate"
+    },
     "begin_time": "2024-04-26T17:03:00Z",
     "end_time": "2024-04-26T17:03:00Z",
     "source": "mock",
@@ -46,7 +51,6 @@
       "county": "Johnson"
     },
     "comments": "Quarter hail reported. (FWD)",
-    "severity": "moderate",
     "source_office": "FWD",
     "time_bucket": "2024-04-26T17:00:00Z",
     "processed_at": "2024-04-26T22:00:00Z"
@@ -58,8 +62,11 @@
       "lat": 42.39,
       "lon": -95.87
     },
-    "magnitude": 1,
-    "unit": "in",
+    "measurement": {
+      "magnitude": 1,
+      "unit": "in",
+      "severity": "moderate"
+    },
     "begin_time": "2024-04-26T17:04:00Z",
     "end_time": "2024-04-26T17:04:00Z",
     "source": "mock",
@@ -70,7 +77,6 @@
       "county": "Woodbury"
     },
     "comments": "Report via social media. (FSD)",
-    "severity": "moderate",
     "source_office": "FSD",
     "time_bucket": "2024-04-26T17:00:00Z",
     "processed_at": "2024-04-26T22:00:00Z"
@@ -82,8 +88,11 @@
       "lat": 32.63,
       "lon": -97.21
     },
-    "magnitude": 1,
-    "unit": "in",
+    "measurement": {
+      "magnitude": 1,
+      "unit": "in",
+      "severity": "moderate"
+    },
     "begin_time": "2024-04-26T17:09:00Z",
     "end_time": "2024-04-26T17:09:00Z",
     "source": "mock",
@@ -96,7 +105,6 @@
       "county": "Tarrant"
     },
     "comments": "Report from mPING: Quarter (1.00 in.). (FWD)",
-    "severity": "moderate",
     "source_office": "FWD",
     "time_bucket": "2024-04-26T17:00:00Z",
     "processed_at": "2024-04-26T22:00:00Z"
@@ -108,8 +116,11 @@
       "lat": 32.77,
       "lon": -97.31
     },
-    "magnitude": 1.75,
-    "unit": "in",
+    "measurement": {
+      "magnitude": 1.75,
+      "unit": "in",
+      "severity": "severe"
+    },
     "begin_time": "2024-04-26T17:10:00Z",
     "end_time": "2024-04-26T17:10:00Z",
     "source": "mock",
@@ -122,7 +133,6 @@
       "county": "Tarrant"
     },
     "comments": "Golf ball hail reported at Little Rd and I20 in SE Fort Worth. (FWD)",
-    "severity": "severe",
     "source_office": "FWD",
     "time_bucket": "2024-04-26T17:00:00Z",
     "processed_at": "2024-04-26T22:00:00Z"
@@ -134,8 +144,11 @@
       "lat": 41.02,
       "lon": -98.91
     },
-    "magnitude": 1.75,
-    "unit": "in",
+    "measurement": {
+      "magnitude": 1.75,
+      "unit": "in",
+      "severity": "severe"
+    },
     "begin_time": "2024-04-26T17:10:00Z",
     "end_time": "2024-04-26T17:10:00Z",
     "source": "mock",
@@ -146,7 +159,6 @@
       "county": "Buffalo"
     },
     "comments": "Also reports of dime to half-dollar size hail in Ravenna. (GID)",
-    "severity": "severe",
     "source_office": "GID",
     "time_bucket": "2024-04-26T17:00:00Z",
     "processed_at": "2024-04-26T22:00:00Z"
@@ -158,8 +170,11 @@
       "lat": 32.69,
       "lon": -97.13
     },
-    "magnitude": 1,
-    "unit": "in",
+    "measurement": {
+      "magnitude": 1,
+      "unit": "in",
+      "severity": "moderate"
+    },
     "begin_time": "2024-04-26T17:11:00Z",
     "end_time": "2024-04-26T17:11:00Z",
     "source": "mock",
@@ -170,7 +185,6 @@
       "county": "Tarrant"
     },
     "comments": "Quarter hail reported in Arlington. (FWD)",
-    "severity": "moderate",
     "source_office": "FWD",
     "time_bucket": "2024-04-26T17:00:00Z",
     "processed_at": "2024-04-26T22:00:00Z"
@@ -182,8 +196,11 @@
       "lat": 32.71,
       "lon": -97.11
     },
-    "magnitude": 1.75,
-    "unit": "in",
+    "measurement": {
+      "magnitude": 1.75,
+      "unit": "in",
+      "severity": "severe"
+    },
     "begin_time": "2024-04-26T17:19:00Z",
     "end_time": "2024-04-26T17:19:00Z",
     "source": "mock",
@@ -196,7 +213,6 @@
       "county": "Tarrant"
     },
     "comments": "Report from mPING: Golf Ball (1.75 in.). (FWD)",
-    "severity": "severe",
     "source_office": "FWD",
     "time_bucket": "2024-04-26T17:00:00Z",
     "processed_at": "2024-04-26T22:00:00Z"
@@ -208,8 +224,11 @@
       "lat": 41.06,
       "lon": -98.91
     },
-    "magnitude": 1.25,
-    "unit": "in",
+    "measurement": {
+      "magnitude": 1.25,
+      "unit": "in",
+      "severity": "moderate"
+    },
     "begin_time": "2024-04-26T17:25:00Z",
     "end_time": "2024-04-26T17:25:00Z",
     "source": "mock",
@@ -222,7 +241,6 @@
       "county": "Sherman"
     },
     "comments": "Started to cover the ground with quarter to half-dollar size hail. (GID)",
-    "severity": "moderate",
     "source_office": "GID",
     "time_bucket": "2024-04-26T17:00:00Z",
     "processed_at": "2024-04-26T22:00:00Z"
@@ -234,8 +252,11 @@
       "lat": 42.63,
       "lon": -95.75
     },
-    "magnitude": 1.25,
-    "unit": "in",
+    "measurement": {
+      "magnitude": 1.25,
+      "unit": "in",
+      "severity": "moderate"
+    },
     "begin_time": "2024-04-26T17:30:00Z",
     "end_time": "2024-04-26T17:30:00Z",
     "source": "mock",
@@ -248,7 +269,6 @@
       "county": "Cherokee"
     },
     "comments": "Quarter to Half Dollar sized hail reported by the Cherokee County EM. Time matched up to Radar. (FSD)",
-    "severity": "moderate",
     "source_office": "FSD",
     "time_bucket": "2024-04-26T17:00:00Z",
     "processed_at": "2024-04-26T22:00:00Z"
@@ -260,8 +280,10 @@
       "lat": 34.96,
       "lon": -95.77
     },
-    "magnitude": 0,
-    "unit": "f_scale",
+    "measurement": {
+      "magnitude": 0,
+      "unit": "f_scale"
+    },
     "begin_time": "2024-04-26T12:23:00Z",
     "end_time": "2024-04-26T12:23:00Z",
     "source": "mock",
@@ -285,8 +307,10 @@
       "lat": 41.02,
       "lon": -98.87
     },
-    "magnitude": 0,
-    "unit": "f_scale",
+    "measurement": {
+      "magnitude": 0,
+      "unit": "f_scale"
+    },
     "begin_time": "2024-04-26T17:16:00Z",
     "end_time": "2024-04-26T17:16:00Z",
     "source": "mock",
@@ -310,8 +334,10 @@
       "lat": 31.63,
       "lon": -97.26
     },
-    "magnitude": 0,
-    "unit": "f_scale",
+    "measurement": {
+      "magnitude": 0,
+      "unit": "f_scale"
+    },
     "begin_time": "2024-04-26T17:23:00Z",
     "end_time": "2024-04-26T17:23:00Z",
     "source": "mock",
@@ -335,8 +361,10 @@
       "lat": 31.63,
       "lon": -97.25
     },
-    "magnitude": 0,
-    "unit": "f_scale",
+    "measurement": {
+      "magnitude": 0,
+      "unit": "f_scale"
+    },
     "begin_time": "2024-04-26T17:26:00Z",
     "end_time": "2024-04-26T17:26:00Z",
     "source": "mock",
@@ -360,8 +388,10 @@
       "lat": 31.64,
       "lon": -97.25
     },
-    "magnitude": 0,
-    "unit": "f_scale",
+    "measurement": {
+      "magnitude": 0,
+      "unit": "f_scale"
+    },
     "begin_time": "2024-04-26T17:26:00Z",
     "end_time": "2024-04-26T17:26:00Z",
     "source": "mock",
@@ -385,8 +415,10 @@
       "lat": 41.06,
       "lon": -98.9
     },
-    "magnitude": 0,
-    "unit": "f_scale",
+    "measurement": {
+      "magnitude": 0,
+      "unit": "f_scale"
+    },
     "begin_time": "2024-04-26T17:28:00Z",
     "end_time": "2024-04-26T17:28:00Z",
     "source": "mock",
@@ -410,8 +442,10 @@
       "lat": 41.1,
       "lon": -98.83
     },
-    "magnitude": 0,
-    "unit": "f_scale",
+    "measurement": {
+      "magnitude": 0,
+      "unit": "f_scale"
+    },
     "begin_time": "2024-04-26T17:32:00Z",
     "end_time": "2024-04-26T17:32:00Z",
     "source": "mock",
@@ -435,8 +469,10 @@
       "lat": 41.11,
       "lon": -98.82
     },
-    "magnitude": 0,
-    "unit": "f_scale",
+    "measurement": {
+      "magnitude": 0,
+      "unit": "f_scale"
+    },
     "begin_time": "2024-04-26T17:38:00Z",
     "end_time": "2024-04-26T17:38:00Z",
     "source": "mock",
@@ -458,8 +494,10 @@
       "lat": 31.76,
       "lon": -97.07
     },
-    "magnitude": 0,
-    "unit": "f_scale",
+    "measurement": {
+      "magnitude": 0,
+      "unit": "f_scale"
+    },
     "begin_time": "2024-04-26T17:48:00Z",
     "end_time": "2024-04-26T17:48:00Z",
     "source": "mock",
@@ -483,8 +521,10 @@
       "lat": 31.78,
       "lon": -97.05
     },
-    "magnitude": 0,
-    "unit": "f_scale",
+    "measurement": {
+      "magnitude": 0,
+      "unit": "f_scale"
+    },
     "begin_time": "2024-04-26T17:48:00Z",
     "end_time": "2024-04-26T17:48:00Z",
     "source": "mock",
@@ -508,8 +548,10 @@
       "lat": 34.94,
       "lon": -95.77
     },
-    "magnitude": 0,
-    "unit": "mph",
+    "measurement": {
+      "magnitude": 0,
+      "unit": "mph"
+    },
     "begin_time": "2024-04-26T12:45:00Z",
     "end_time": "2024-04-26T12:45:00Z",
     "source": "mock",
@@ -531,8 +573,11 @@
       "lat": 34.94,
       "lon": -95.59
     },
-    "magnitude": 65,
-    "unit": "mph",
+    "measurement": {
+      "magnitude": 65,
+      "unit": "mph",
+      "severity": "moderate"
+    },
     "begin_time": "2024-04-26T12:51:00Z",
     "end_time": "2024-04-26T12:51:00Z",
     "source": "mock",
@@ -545,7 +590,6 @@
       "county": "Pittsburg"
     },
     "comments": "(TSA)",
-    "severity": "moderate",
     "source_office": "TSA",
     "time_bucket": "2024-04-26T12:00:00Z",
     "processed_at": "2024-04-26T22:00:00Z"
@@ -557,8 +601,10 @@
       "lat": 36.06,
       "lon": -115.06
     },
-    "magnitude": 0,
-    "unit": "mph",
+    "measurement": {
+      "magnitude": 0,
+      "unit": "mph"
+    },
     "begin_time": "2024-04-26T19:35:00Z",
     "end_time": "2024-04-26T19:35:00Z",
     "source": "mock",
@@ -582,8 +628,10 @@
       "lat": 40.88,
       "lon": -96.59
     },
-    "magnitude": 0,
-    "unit": "mph",
+    "measurement": {
+      "magnitude": 0,
+      "unit": "mph"
+    },
     "begin_time": "2024-04-26T19:55:00Z",
     "end_time": "2024-04-26T19:55:00Z",
     "source": "mock",
@@ -607,8 +655,10 @@
       "lat": 40.92,
       "lon": -96.52
     },
-    "magnitude": 0,
-    "unit": "mph",
+    "measurement": {
+      "magnitude": 0,
+      "unit": "mph"
+    },
     "begin_time": "2024-04-26T19:55:00Z",
     "end_time": "2024-04-26T19:55:00Z",
     "source": "mock",
@@ -632,8 +682,11 @@
       "lat": 32.49,
       "lon": -96.25
     },
-    "magnitude": 75,
-    "unit": "mph",
+    "measurement": {
+      "magnitude": 75,
+      "unit": "mph",
+      "severity": "severe"
+    },
     "begin_time": "2024-04-26T21:20:00Z",
     "end_time": "2024-04-26T21:20:00Z",
     "source": "mock",
@@ -646,7 +699,6 @@
       "county": "Kaufman"
     },
     "comments": "Gust measured by home weather station. Damage to trees on property. Chicken coop blown away. Time estimated from radar. (FWD)",
-    "severity": "severe",
     "source_office": "FWD",
     "time_bucket": "2024-04-26T21:00:00Z",
     "processed_at": "2024-04-26T22:00:00Z"
@@ -658,8 +710,10 @@
       "lat": 32.49,
       "lon": -96.21
     },
-    "magnitude": 0,
-    "unit": "mph",
+    "measurement": {
+      "magnitude": 0,
+      "unit": "mph"
+    },
     "begin_time": "2024-04-26T21:25:00Z",
     "end_time": "2024-04-26T21:25:00Z",
     "source": "mock",
@@ -683,8 +737,10 @@
       "lat": 32.93,
       "lon": -95.58
     },
-    "magnitude": 0,
-    "unit": "mph",
+    "measurement": {
+      "magnitude": 0,
+      "unit": "mph"
+    },
     "begin_time": "2024-04-26T21:45:00Z",
     "end_time": "2024-04-26T21:45:00Z",
     "source": "mock",
@@ -706,8 +762,10 @@
       "lat": 32.56,
       "lon": -95.87
     },
-    "magnitude": 0,
-    "unit": "mph",
+    "measurement": {
+      "magnitude": 0,
+      "unit": "mph"
+    },
     "begin_time": "2024-04-26T21:51:00Z",
     "end_time": "2024-04-26T21:51:00Z",
     "source": "mock",
@@ -731,8 +789,11 @@
       "lat": 41.3,
       "lon": -95.89
     },
-    "magnitude": 61,
-    "unit": "mph",
+    "measurement": {
+      "magnitude": 61,
+      "unit": "mph",
+      "severity": "moderate"
+    },
     "begin_time": "2024-04-26T22:04:00Z",
     "end_time": "2024-04-26T22:04:00Z",
     "source": "mock",
@@ -745,7 +806,6 @@
       "county": "Douglas"
     },
     "comments": "Delayed report. ASOS at Eppley Airfield. Measured wind gust as tornado moved very nearby. (OAX)",
-    "severity": "moderate",
     "source_office": "OAX",
     "time_bucket": "2024-04-26T22:00:00Z",
     "processed_at": "2024-04-26T22:00:00Z"

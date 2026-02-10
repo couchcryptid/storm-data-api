@@ -223,8 +223,8 @@ func TestStoreFilters(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, 4, count)
 		for _, r := range reports {
-			require.NotNil(t, r.Severity, testReportMsg, r.ID)
-			assert.Equal(t, "severe", *r.Severity, testReportMsg, r.ID)
+			require.NotNil(t, r.Measurement.Severity, testReportMsg, r.ID)
+			assert.Equal(t, "severe", *r.Measurement.Severity, testReportMsg, r.ID)
 		}
 	})
 
@@ -255,7 +255,7 @@ func TestStoreFilters(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, 6, count)
 		for _, r := range reports {
-			assert.GreaterOrEqual(t, r.Magnitude, 1.75, testReportMsg, r.ID)
+			assert.GreaterOrEqual(t, r.Measurement.Magnitude, 1.75, testReportMsg, r.ID)
 		}
 	})
 
@@ -270,8 +270,8 @@ func TestStoreFilters(t *testing.T) {
 		for _, r := range reports {
 			assert.Equal(t, "hail", r.Type, testReportMsg, r.ID)
 			assert.Equal(t, "TX", r.Location.State, testReportMsg, r.ID)
-			require.NotNil(t, r.Severity, testReportMsg, r.ID)
-			assert.Equal(t, "severe", *r.Severity, testReportMsg, r.ID)
+			require.NotNil(t, r.Measurement.Severity, testReportMsg, r.ID)
+			assert.Equal(t, "severe", *r.Measurement.Severity, testReportMsg, r.ID)
 		}
 	})
 
@@ -307,7 +307,7 @@ func TestStoreSortingAndPagination(t *testing.T) {
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(reports), 2)
 		for i := 1; i < len(reports); i++ {
-			assert.GreaterOrEqual(t, reports[i-1].Magnitude, reports[i].Magnitude,
+			assert.GreaterOrEqual(t, reports[i-1].Measurement.Magnitude, reports[i].Measurement.Magnitude,
 				"reports[%d] > reports[%d]", i-1, i)
 		}
 	})
@@ -321,7 +321,7 @@ func TestStoreSortingAndPagination(t *testing.T) {
 		reports, _, err := s.ListStormReports(ctx, f)
 		require.NoError(t, err)
 		for i := 1; i < len(reports); i++ {
-			assert.LessOrEqual(t, reports[i-1].Magnitude, reports[i].Magnitude,
+			assert.LessOrEqual(t, reports[i-1].Measurement.Magnitude, reports[i].Measurement.Magnitude,
 				"reports[%d] < reports[%d]", i-1, i)
 		}
 	})

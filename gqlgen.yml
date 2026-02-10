@@ -18,8 +18,6 @@ models:
   StormReport:
     model: github.com/couchcryptid/storm-data-graphql-api/internal/model.StormReport
     fields:
-      measurement:
-        resolver: true
       eventType:
         resolver: true
   Geo:
@@ -28,6 +26,8 @@ models:
     model: github.com/couchcryptid/storm-data-graphql-api/internal/model.Location
   Measurement:
     model: github.com/couchcryptid/storm-data-graphql-api/internal/model.Measurement
+  Geocoding:
+    model: github.com/couchcryptid/storm-data-graphql-api/internal/model.Geocoding
   StormReportFilter:
     model: github.com/couchcryptid/storm-data-graphql-api/internal/model.StormReportFilter
   TimeRange:

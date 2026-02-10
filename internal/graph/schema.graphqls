@@ -88,10 +88,7 @@ type StormReport {
   comments: String!
   timeBucket: DateTime!
   processedAt: DateTime!
-  formattedAddress: String!
-  placeName: String!
-  geoConfidence: Float!
-  geoSource: String!
+  geocoding: Geocoding!
 }
 
 type Measurement {
@@ -103,6 +100,13 @@ type Measurement {
 type Geo {
   lat: Float!
   lon: Float!
+}
+
+type Geocoding {
+  formattedAddress: String!
+  placeName: String!
+  confidence: Float!
+  source: String!
 }
 
 type Location {

@@ -156,7 +156,7 @@ func TestSortColumn(t *testing.T) {
 		want  string
 	}{
 		{model.SortFieldBeginTime, "begin_time"},
-		{model.SortFieldMagnitude, "magnitude"},
+		{model.SortFieldMagnitude, "measurement_magnitude"},
 		{model.SortFieldLocationState, "location_state"},
 		{model.SortFieldEventType, "type"},
 		{model.SortField("UNKNOWN"), "begin_time"},

@@ -64,6 +64,13 @@ type ComplexityRoot struct {
 		Lon func(childComplexity int) int
 	}
 
+	Geocoding struct {
+		Confidence       func(childComplexity int) int
+		FormattedAddress func(childComplexity int) int
+		PlaceName        func(childComplexity int) int
+		Source           func(childComplexity int) int
+	}
+
 	Location struct {
 		County    func(childComplexity int) int
 		Direction func(childComplexity int) int
@@ -102,22 +109,19 @@ type ComplexityRoot struct {
 	}
 
 	StormReport struct {
-		BeginTime        func(childComplexity int) int
-		Comments         func(childComplexity int) int
-		EndTime          func(childComplexity int) int
-		EventType        func(childComplexity int) int
-		FormattedAddress func(childComplexity int) int
-		Geo              func(childComplexity int) int
-		GeoConfidence    func(childComplexity int) int
-		GeoSource        func(childComplexity int) int
-		ID               func(childComplexity int) int
-		Location         func(childComplexity int) int
-		Measurement      func(childComplexity int) int
-		PlaceName        func(childComplexity int) int
-		ProcessedAt      func(childComplexity int) int
-		Source           func(childComplexity int) int
-		SourceOffice     func(childComplexity int) int
-		TimeBucket       func(childComplexity int) int
+		BeginTime    func(childComplexity int) int
+		Comments     func(childComplexity int) int
+		EndTime      func(childComplexity int) int
+		EventType    func(childComplexity int) int
+		Geo          func(childComplexity int) int
+		Geocoding    func(childComplexity int) int
+		ID           func(childComplexity int) int
+		Location     func(childComplexity int) int
+		Measurement  func(childComplexity int) int
+		ProcessedAt  func(childComplexity int) int
+		Source       func(childComplexity int) int
+		SourceOffice func(childComplexity int) int
+		TimeBucket   func(childComplexity int) int
 	}
 
 	StormReportsResult struct {
@@ -139,8 +143,6 @@ type QueryResolver interface {
 }
 type StormReportResolver interface {
 	EventType(ctx context.Context, obj *model.StormReport) (string, error)
-
-	Measurement(ctx context.Context, obj *model.StormReport) (*model.Measurement, error)
 }
 
 type executableSchema struct {
@@ -206,6 +208,31 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Geo.Lon(childComplexity), true
+
+	case "Geocoding.confidence":
+		if e.complexity.Geocoding.Confidence == nil {
+			break
+		}
+
+		return e.complexity.Geocoding.Confidence(childComplexity), true
+	case "Geocoding.formattedAddress":
+		if e.complexity.Geocoding.FormattedAddress == nil {
+			break
+		}
+
+		return e.complexity.Geocoding.FormattedAddress(childComplexity), true
+	case "Geocoding.placeName":
+		if e.complexity.Geocoding.PlaceName == nil {
+			break
+		}
+
+		return e.complexity.Geocoding.PlaceName(childComplexity), true
+	case "Geocoding.source":
+		if e.complexity.Geocoding.Source == nil {
+			break
+		}
+
+		return e.complexity.Geocoding.Source(childComplexity), true
 
 	case "Location.county":
 		if e.complexity.Location.County == nil {
@@ -356,30 +383,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.StormReport.EventType(childComplexity), true
-	case "StormReport.formattedAddress":
-		if e.complexity.StormReport.FormattedAddress == nil {
-			break
-		}
-
-		return e.complexity.StormReport.FormattedAddress(childComplexity), true
 	case "StormReport.geo":
 		if e.complexity.StormReport.Geo == nil {
 			break
 		}
 
 		return e.complexity.StormReport.Geo(childComplexity), true
-	case "StormReport.geoConfidence":
-		if e.complexity.StormReport.GeoConfidence == nil {
+	case "StormReport.geocoding":
+		if e.complexity.StormReport.Geocoding == nil {
 			break
 		}
 
-		return e.complexity.StormReport.GeoConfidence(childComplexity), true
-	case "StormReport.geoSource":
-		if e.complexity.StormReport.GeoSource == nil {
-			break
-		}
-
-		return e.complexity.StormReport.GeoSource(childComplexity), true
+		return e.complexity.StormReport.Geocoding(childComplexity), true
 	case "StormReport.id":
 		if e.complexity.StormReport.ID == nil {
 			break
@@ -398,12 +413,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.StormReport.Measurement(childComplexity), true
-	case "StormReport.placeName":
-		if e.complexity.StormReport.PlaceName == nil {
-			break
-		}
-
-		return e.complexity.StormReport.PlaceName(childComplexity), true
 	case "StormReport.processedAt":
 		if e.complexity.StormReport.ProcessedAt == nil {
 			break
@@ -866,6 +875,122 @@ func (ec *executionContext) fieldContext_Geo_lon(_ context.Context, field graphq
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Geocoding_formattedAddress(ctx context.Context, field graphql.CollectedField, obj *model.Geocoding) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Geocoding_formattedAddress,
+		func(ctx context.Context) (any, error) {
+			return obj.FormattedAddress, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Geocoding_formattedAddress(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Geocoding",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Geocoding_placeName(ctx context.Context, field graphql.CollectedField, obj *model.Geocoding) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Geocoding_placeName,
+		func(ctx context.Context) (any, error) {
+			return obj.PlaceName, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Geocoding_placeName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Geocoding",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Geocoding_confidence(ctx context.Context, field graphql.CollectedField, obj *model.Geocoding) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Geocoding_confidence,
+		func(ctx context.Context) (any, error) {
+			return obj.Confidence, nil
+		},
+		nil,
+		ec.marshalNFloat2float64,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Geocoding_confidence(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Geocoding",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Geocoding_source(ctx context.Context, field graphql.CollectedField, obj *model.Geocoding) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Geocoding_source,
+		func(ctx context.Context) (any, error) {
+			return obj.Source, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Geocoding_source(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Geocoding",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1682,10 +1807,10 @@ func (ec *executionContext) _StormReport_measurement(ctx context.Context, field 
 		field,
 		ec.fieldContext_StormReport_measurement,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.StormReport().Measurement(ctx, obj)
+			return obj.Measurement, nil
 		},
 		nil,
-		ec.marshalNMeasurement2ᚖgithubᚗcomᚋcouchcryptidᚋstormᚑdataᚑgraphqlᚑapiᚋinternalᚋmodelᚐMeasurement,
+		ec.marshalNMeasurement2githubᚗcomᚋcouchcryptidᚋstormᚑdataᚑgraphqlᚑapiᚋinternalᚋmodelᚐMeasurement,
 		true,
 		true,
 	)
@@ -1695,8 +1820,8 @@ func (ec *executionContext) fieldContext_StormReport_measurement(_ context.Conte
 	fc = &graphql.FieldContext{
 		Object:     "StormReport",
 		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "magnitude":
@@ -1958,117 +2083,40 @@ func (ec *executionContext) fieldContext_StormReport_processedAt(_ context.Conte
 	return fc, nil
 }
 
-func (ec *executionContext) _StormReport_formattedAddress(ctx context.Context, field graphql.CollectedField, obj *model.StormReport) (ret graphql.Marshaler) {
+func (ec *executionContext) _StormReport_geocoding(ctx context.Context, field graphql.CollectedField, obj *model.StormReport) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_StormReport_formattedAddress,
+		ec.fieldContext_StormReport_geocoding,
 		func(ctx context.Context) (any, error) {
-			return obj.FormattedAddress, nil
+			return obj.Geocoding, nil
 		},
 		nil,
-		ec.marshalNString2string,
+		ec.marshalNGeocoding2githubᚗcomᚋcouchcryptidᚋstormᚑdataᚑgraphqlᚑapiᚋinternalᚋmodelᚐGeocoding,
 		true,
 		true,
 	)
 }
 
-func (ec *executionContext) fieldContext_StormReport_formattedAddress(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_StormReport_geocoding(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "StormReport",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _StormReport_placeName(ctx context.Context, field graphql.CollectedField, obj *model.StormReport) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_StormReport_placeName,
-		func(ctx context.Context) (any, error) {
-			return obj.PlaceName, nil
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_StormReport_placeName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "StormReport",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _StormReport_geoConfidence(ctx context.Context, field graphql.CollectedField, obj *model.StormReport) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_StormReport_geoConfidence,
-		func(ctx context.Context) (any, error) {
-			return obj.GeoConfidence, nil
-		},
-		nil,
-		ec.marshalNFloat2float64,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_StormReport_geoConfidence(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "StormReport",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Float does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _StormReport_geoSource(ctx context.Context, field graphql.CollectedField, obj *model.StormReport) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_StormReport_geoSource,
-		func(ctx context.Context) (any, error) {
-			return obj.GeoSource, nil
-		},
-		nil,
-		ec.marshalNString2string,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_StormReport_geoSource(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "StormReport",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			switch field.Name {
+			case "formattedAddress":
+				return ec.fieldContext_Geocoding_formattedAddress(ctx, field)
+			case "placeName":
+				return ec.fieldContext_Geocoding_placeName(ctx, field)
+			case "confidence":
+				return ec.fieldContext_Geocoding_confidence(ctx, field)
+			case "source":
+				return ec.fieldContext_Geocoding_source(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Geocoding", field.Name)
 		},
 	}
 	return fc, nil
@@ -2180,14 +2228,8 @@ func (ec *executionContext) fieldContext_StormReportsResult_reports(_ context.Co
 				return ec.fieldContext_StormReport_timeBucket(ctx, field)
 			case "processedAt":
 				return ec.fieldContext_StormReport_processedAt(ctx, field)
-			case "formattedAddress":
-				return ec.fieldContext_StormReport_formattedAddress(ctx, field)
-			case "placeName":
-				return ec.fieldContext_StormReport_placeName(ctx, field)
-			case "geoConfidence":
-				return ec.fieldContext_StormReport_geoConfidence(ctx, field)
-			case "geoSource":
-				return ec.fieldContext_StormReport_geoSource(ctx, field)
+			case "geocoding":
+				return ec.fieldContext_StormReport_geocoding(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type StormReport", field.Name)
 		},
@@ -4142,6 +4184,60 @@ func (ec *executionContext) _Geo(ctx context.Context, sel ast.SelectionSet, obj 
 	return out
 }
 
+var geocodingImplementors = []string{"Geocoding"}
+
+func (ec *executionContext) _Geocoding(ctx context.Context, sel ast.SelectionSet, obj *model.Geocoding) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, geocodingImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Geocoding")
+		case "formattedAddress":
+			out.Values[i] = ec._Geocoding_formattedAddress(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "placeName":
+			out.Values[i] = ec._Geocoding_placeName(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "confidence":
+			out.Values[i] = ec._Geocoding_confidence(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "source":
+			out.Values[i] = ec._Geocoding_source(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var locationImplementors = []string{"Location"}
 
 func (ec *executionContext) _Location(ctx context.Context, sel ast.SelectionSet, obj *model.Location) graphql.Marshaler {
@@ -4517,41 +4613,10 @@ func (ec *executionContext) _StormReport(ctx context.Context, sel ast.SelectionS
 				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "measurement":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._StormReport_measurement(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
+			out.Values[i] = ec._StormReport_measurement(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
 			}
-
-			if field.Deferrable != nil {
-				dfs, ok := deferred[field.Deferrable.Label]
-				di := 0
-				if ok {
-					dfs.AddField(field)
-					di = len(dfs.Values) - 1
-				} else {
-					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
-					deferred[field.Deferrable.Label] = dfs
-				}
-				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, dfs)
-				})
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "beginTime":
 			out.Values[i] = ec._StormReport_beginTime(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -4592,23 +4657,8 @@ func (ec *executionContext) _StormReport(ctx context.Context, sel ast.SelectionS
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
-		case "formattedAddress":
-			out.Values[i] = ec._StormReport_formattedAddress(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
-			}
-		case "placeName":
-			out.Values[i] = ec._StormReport_placeName(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
-			}
-		case "geoConfidence":
-			out.Values[i] = ec._StormReport_geoConfidence(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
-			}
-		case "geoSource":
-			out.Values[i] = ec._StormReport_geoSource(ctx, field, obj)
+		case "geocoding":
+			out.Values[i] = ec._StormReport_geocoding(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
@@ -5248,6 +5298,10 @@ func (ec *executionContext) marshalNGeo2githubᚗcomᚋcouchcryptidᚋstormᚑda
 	return ec._Geo(ctx, sel, &v)
 }
 
+func (ec *executionContext) marshalNGeocoding2githubᚗcomᚋcouchcryptidᚋstormᚑdataᚑgraphqlᚑapiᚋinternalᚋmodelᚐGeocoding(ctx context.Context, sel ast.SelectionSet, v model.Geocoding) graphql.Marshaler {
+	return ec._Geocoding(ctx, sel, &v)
+}
+
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v any) (string, error) {
 	res, err := graphql.UnmarshalID(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -5286,16 +5340,6 @@ func (ec *executionContext) marshalNLocation2githubᚗcomᚋcouchcryptidᚋstorm
 
 func (ec *executionContext) marshalNMeasurement2githubᚗcomᚋcouchcryptidᚋstormᚑdataᚑgraphqlᚑapiᚋinternalᚋmodelᚐMeasurement(ctx context.Context, sel ast.SelectionSet, v model.Measurement) graphql.Marshaler {
 	return ec._Measurement(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNMeasurement2ᚖgithubᚗcomᚋcouchcryptidᚋstormᚑdataᚑgraphqlᚑapiᚋinternalᚋmodelᚐMeasurement(ctx context.Context, sel ast.SelectionSet, v *model.Measurement) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._Measurement(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNQueryMeta2ᚖgithubᚗcomᚋcouchcryptidᚋstormᚑdataᚑgraphqlᚑapiᚋinternalᚋmodelᚐQueryMeta(ctx context.Context, sel ast.SelectionSet, v *model.QueryMeta) graphql.Marshaler {

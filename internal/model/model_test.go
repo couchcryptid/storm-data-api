@@ -77,7 +77,7 @@ func TestMockDataOptionalFields(t *testing.T) {
 
 	var withSeverity, withDistance int
 	for _, r := range reports {
-		if r.Severity != nil {
+		if r.Measurement.Severity != nil {
 			withSeverity++
 		}
 		if r.Location.Distance != nil {
@@ -113,11 +113,11 @@ func TestMockDataHailReport(t *testing.T) {
 	if first.Type != "hail" {
 		t.Errorf("expected type hail, got %s", first.Type)
 	}
-	if first.Magnitude != 1.25 {
-		t.Errorf("expected magnitude 1.25, got %f", first.Magnitude)
+	if first.Measurement.Magnitude != 1.25 {
+		t.Errorf("expected magnitude 1.25, got %f", first.Measurement.Magnitude)
 	}
-	if first.Unit != "in" {
-		t.Errorf("expected unit in, got %s", first.Unit)
+	if first.Measurement.Unit != "in" {
+		t.Errorf("expected unit in, got %s", first.Measurement.Unit)
 	}
 	if first.Geo.Lat != 31.02 {
 		t.Errorf("expected lat 31.02, got %f", first.Geo.Lat)
