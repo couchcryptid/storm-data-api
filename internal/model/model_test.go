@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/couchcryptid/storm-data-graphql-api/internal/model"
+	"github.com/couchcryptid/storm-data-api/internal/model"
 )
 
 func loadMockData(t *testing.T) []model.StormReport {

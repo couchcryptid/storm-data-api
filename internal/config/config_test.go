@@ -16,7 +16,7 @@ func TestLoad_Defaults(t *testing.T) {
 	assert.Equal(t, "postgres://storm:storm@localhost:5432/stormdata?sslmode=disable", cfg.DatabaseURL)
 	assert.Equal(t, []string{"localhost:29092"}, cfg.KafkaBrokers)
 	assert.Equal(t, "transformed-weather-data", cfg.KafkaTopic)
-	assert.Equal(t, "storm-data-graphql-api", cfg.KafkaGroupID)
+	assert.Equal(t, "storm-data-api", cfg.KafkaGroupID)
 	assert.Equal(t, "info", cfg.LogLevel)
 	assert.Equal(t, "json", cfg.LogFormat)
 	assert.Equal(t, 10*time.Second, cfg.ShutdownTimeout)

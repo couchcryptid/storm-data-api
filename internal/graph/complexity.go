@@ -1,6 +1,6 @@
 package graph
 
-import "github.com/couchcryptid/storm-data-graphql-api/internal/model"
+import "github.com/couchcryptid/storm-data-api/internal/model"
 
 // NewComplexityRoot returns complexity estimators for expensive fields.
 // gqlgen computes total query complexity bottom-up and rejects queries exceeding

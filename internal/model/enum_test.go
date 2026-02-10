@@ -3,7 +3,7 @@ package model_test
 import (
 	"testing"
 
-	"github.com/couchcryptid/storm-data-graphql-api/internal/model"
+	"github.com/couchcryptid/storm-data-api/internal/model"
 )
 
 func TestSortFieldIsValid(t *testing.T) {

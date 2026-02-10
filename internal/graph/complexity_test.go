@@ -3,7 +3,7 @@ package graph
 import (
 	"testing"
 
-	"github.com/couchcryptid/storm-data-graphql-api/internal/model"
+	"github.com/couchcryptid/storm-data-api/internal/model"
 	"github.com/stretchr/testify/assert"
 )
 

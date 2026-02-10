@@ -10,7 +10,7 @@ All configuration is via environment variables. Every variable has a default sui
 | `DATABASE_URL` | `postgres://storm:storm@localhost:5432/stormdata?sslmode=disable` | PostgreSQL connection string |
 | `KAFKA_BROKERS` | `localhost:29092` | Kafka broker address |
 | `KAFKA_TOPIC` | `transformed-weather-data` | Kafka topic to consume |
-| `KAFKA_GROUP_ID` | `storm-data-graphql-api` | Kafka consumer group ID |
+| `KAFKA_GROUP_ID` | `storm-data-api` | Kafka consumer group ID |
 | `LOG_LEVEL` | `info` | Log level: `debug`, `info`, `warn`, `error` |
 | `LOG_FORMAT` | `json` | Log format: `json` or `text` |
 | `SHUTDOWN_TIMEOUT` | `10s` | Graceful shutdown deadline (Go duration) |
@@ -51,7 +51,7 @@ These endpoints are always available and do not require configuration:
 |----------|-------------|
 | `GET /healthz` | Liveness probe — always returns 200 |
 | `GET /readyz` | Readiness probe — returns 200 if Postgres is reachable, 503 otherwise |
-| `GET /metrics` | Prometheus scrape endpoint (all `storm_data_api_*` metrics) |
+| `GET /metrics` | Prometheus scrape endpoint (all `storm_api_*` metrics) |
 
 ## Docker
 
@@ -61,5 +61,5 @@ When running the server in Docker, pass environment variables to configure exter
 docker run -e DATABASE_URL=postgres://user:pass@host:5432/db \
            -e KAFKA_BROKERS=kafka:9092 \
            -p 8080:8080 \
-           storm-data-graphql-api
+           storm-data-api
 ```

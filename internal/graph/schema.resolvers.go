@@ -8,7 +8,7 @@ package graph
 import (
 	"context"
 
-	"github.com/couchcryptid/storm-data-graphql-api/internal/model"
+	"github.com/couchcryptid/storm-data-api/internal/model"
 	"golang.org/x/sync/errgroup"
 )
 

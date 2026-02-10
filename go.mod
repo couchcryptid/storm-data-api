@@ -1,4 +1,4 @@
-module github.com/couchcryptid/storm-data-graphql-api
+module github.com/couchcryptid/storm-data-api
 
 go 1.25.6
 

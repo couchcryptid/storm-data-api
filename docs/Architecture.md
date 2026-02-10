@@ -36,7 +36,7 @@ Defines the domain types that all layers share. The struct shape is derived dire
 
 ### Store (`internal/store`)
 
-Handles all PostgreSQL interactions. The database schema flattens the nested JSON structure — `geo.lat`/`geo.lon` become `geo_lat`/`geo_lon` columns, and `location.*` fields become `location_*` columns.
+Handles all PostgreSQL interactions. The database schema flattens the nested JSON structure — `geo.lat`/`geo.lon` become `geo_lat`/`geo_lon` columns, `location.*` fields become `location_*` columns, `measurement.*` fields become `measurement_*` columns, and `geocoding.*` fields become `geocoding_*` columns.
 
 The `ListStormReports` method builds dynamic WHERE clauses from the filter struct, with support for array filters (using PostgreSQL `ANY()`), sorting, and pagination. Aggregation methods (`CountByType`, `CountByState`, `CountByHour`, `LastUpdated`) provide grouped summaries. Geographic radius filtering uses the Haversine formula in SQL with a bounding box pre-filter for index efficiency.
 
@@ -72,31 +72,31 @@ Manages the pgx connection pool, runs embedded SQL migrations on startup, and pr
 
 ```sql
 CREATE TABLE storm_reports (
-    id                TEXT PRIMARY KEY,
-    type              TEXT NOT NULL,
-    geo_lat           DOUBLE PRECISION NOT NULL,
-    geo_lon           DOUBLE PRECISION NOT NULL,
-    magnitude         DOUBLE PRECISION NOT NULL,
-    unit              TEXT NOT NULL,
-    begin_time        TIMESTAMPTZ NOT NULL,
-    end_time          TIMESTAMPTZ NOT NULL,
-    source            TEXT NOT NULL,
-    location_raw      TEXT NOT NULL,
-    location_name     TEXT NOT NULL,
-    location_distance DOUBLE PRECISION,
-    location_direction TEXT,
-    location_state    TEXT NOT NULL,
-    location_county   TEXT NOT NULL,
-    comments          TEXT NOT NULL,
-    severity          TEXT,
-    source_office     TEXT NOT NULL,
-    time_bucket       TIMESTAMPTZ NOT NULL,
-    processed_at      TIMESTAMPTZ NOT NULL,
-    formatted_address TEXT NOT NULL DEFAULT '',
-    place_name        TEXT NOT NULL DEFAULT '',
-    geo_confidence    DOUBLE PRECISION NOT NULL DEFAULT 0,
-    geo_source        TEXT NOT NULL DEFAULT '',
-    created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    id                          TEXT PRIMARY KEY,
+    type                        TEXT NOT NULL,
+    geo_lat                     DOUBLE PRECISION NOT NULL,
+    geo_lon                     DOUBLE PRECISION NOT NULL,
+    measurement_magnitude       DOUBLE PRECISION NOT NULL,
+    measurement_unit            TEXT NOT NULL,
+    begin_time                  TIMESTAMPTZ NOT NULL,
+    end_time                    TIMESTAMPTZ NOT NULL,
+    source                      TEXT NOT NULL,
+    location_raw                TEXT NOT NULL,
+    location_name               TEXT NOT NULL,
+    location_distance           DOUBLE PRECISION,
+    location_direction          TEXT,
+    location_state              TEXT NOT NULL,
+    location_county             TEXT NOT NULL,
+    comments                    TEXT NOT NULL,
+    measurement_severity        TEXT,
+    source_office               TEXT NOT NULL,
+    time_bucket                 TIMESTAMPTZ NOT NULL,
+    processed_at                TIMESTAMPTZ NOT NULL,
+    geocoding_formatted_address TEXT NOT NULL DEFAULT '',
+    geocoding_place_name        TEXT NOT NULL DEFAULT '',
+    geocoding_confidence        DOUBLE PRECISION NOT NULL DEFAULT 0,
+    geocoding_source            TEXT NOT NULL DEFAULT '',
+    created_at                  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 ```
 
@@ -107,7 +107,7 @@ CREATE TABLE storm_reports (
 | `idx_begin_time` | `begin_time` | Date range queries, ORDER BY |
 | `idx_type` | `type` | Filter by event type (hail, tornado, wind) |
 | `idx_state` | `location_state` | Filter by state |
-| `idx_severity` | `severity` | Filter by severity level |
+| `idx_severity` | `measurement_severity` | Filter by severity level |
 | `idx_type_state_time` | `type, location_state, begin_time` | Composite for the typical "type + state + time" filter |
 | `idx_geo` | `geo_lat, geo_lon` | Bounding box pre-filter for radius queries |
 

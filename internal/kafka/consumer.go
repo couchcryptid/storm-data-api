@@ -6,8 +6,8 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/couchcryptid/storm-data-graphql-api/internal/model"
-	"github.com/couchcryptid/storm-data-graphql-api/internal/observability"
+	"github.com/couchcryptid/storm-data-api/internal/model"
+	"github.com/couchcryptid/storm-data-api/internal/observability"
 	kafkago "github.com/segmentio/kafka-go"
 )
 

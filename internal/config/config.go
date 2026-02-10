@@ -33,7 +33,7 @@ func Load() (*Config, error) {
 		DatabaseURL:     envOrDefault("DATABASE_URL", "postgres://storm:storm@localhost:5432/stormdata?sslmode=disable"),
 		KafkaBrokers:    parseBrokers(envOrDefault("KAFKA_BROKERS", "localhost:29092")),
 		KafkaTopic:      envOrDefault("KAFKA_TOPIC", "transformed-weather-data"),
-		KafkaGroupID:    envOrDefault("KAFKA_GROUP_ID", "storm-data-graphql-api"),
+		KafkaGroupID:    envOrDefault("KAFKA_GROUP_ID", "storm-data-api"),
 		LogLevel:        envOrDefault("LOG_LEVEL", "info"),
 		LogFormat:       envOrDefault("LOG_FORMAT", "json"),
 		ShutdownTimeout: shutdownTimeout,

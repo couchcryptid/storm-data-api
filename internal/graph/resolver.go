@@ -1,6 +1,6 @@
 package graph
 
-import "github.com/couchcryptid/storm-data-graphql-api/internal/store"
+import "github.com/couchcryptid/storm-data-api/internal/store"
 
 //go:generate go run github.com/99designs/gqlgen generate
 

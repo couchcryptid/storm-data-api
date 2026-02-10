@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/couchcryptid/storm-data-graphql-api/internal/model"
-	"github.com/couchcryptid/storm-data-graphql-api/internal/observability"
+	"github.com/couchcryptid/storm-data-api/internal/model"
+	"github.com/couchcryptid/storm-data-api/internal/observability"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )

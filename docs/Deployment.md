@@ -28,7 +28,7 @@ docker compose down -v
 | ------------------------ | -------------------- | ----- | -------------------------------------- |
 | `postgres`               | `postgres:16`        | 5432  | PostgreSQL database                    |
 | `kafka`                  | `apache/kafka:3.7.0` | 29092 | Message broker (KRaft, no Zookeeper)   |
-| `storm-data-graphql-api` | Built from `Dockerfile` | 8080 | GraphQL API service                   |
+| `storm-data-api` | Built from `Dockerfile` | 8080 | GraphQL API service                   |
 
 ### Health Checks
 
@@ -60,7 +60,7 @@ The final image contains only the binary, CA certificates, and a static BusyBox 
 ### Build Manually
 
 ```sh
-docker build -t storm-data-graphql-api .
+docker build -t storm-data-api .
 ```
 
 ### Run Standalone
@@ -70,14 +70,14 @@ docker run -p 8080:8080 \
   -e DATABASE_URL=postgres://user:pass@host:5432/stormdata?sslmode=disable \
   -e KAFKA_BROKERS=host.docker.internal:9092 \
   -e KAFKA_TOPIC=transformed-weather-data \
-  storm-data-graphql-api
+  storm-data-api
 ```
 
 ## Environment Files
 
 | File            | Used By                    | Description                                       |
 | --------------- | -------------------------- | ------------------------------------------------- |
-| `.env`          | `storm-data-graphql-api`   | API service config (gitignored)                    |
+| `.env`          | `storm-data-api`   | API service config (gitignored)                    |
 | `.env.postgres` | `postgres` container       | `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` |
 | `.env.kafka`    | `kafka` container          | Kafka KRaft broker settings (listeners, controller, replication) |
 

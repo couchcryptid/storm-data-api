@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/couchcryptid/storm-data-graphql-api/internal/config"
+	"github.com/couchcryptid/storm-data-api/internal/config"
 )
 
 // NewLogger creates a structured logger based on config and sets it as the default.

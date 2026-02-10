@@ -2,13 +2,13 @@
 
 ## Source of Truth
 
-The Kafka message shape is defined by the mock data file:
+The authoritative data model is defined by:
 
-```
-data/mock/storm_reports_240526_transformed.json
-```
+1. **GraphQL schema**: `internal/graph/schema.graphqls` — defines the API types (`StormReport`, `Measurement`, `Geocoding`, etc.)
+2. **Database migration**: `internal/database/migrations/001_create_storm_reports.up.sql` — defines the PostgreSQL schema
+3. **System Data Model**: The [storm-data-system Data Model](https://github.com/couchcryptid/storm-data-system/wiki/Data-Model) wiki page documents the full pipeline data model
 
-All Go structs, the GraphQL schema, and the database schema are derived from this file.
+The mock data file (`data/mock/storm_reports_240526_transformed.json`) provides test fixtures in this shape.
 
 ## Message Shape
 
@@ -16,17 +16,20 @@ Each Kafka message on the `transformed-weather-data` topic is a single JSON obje
 
 ```json
 {
-  "id": "hail-1",
+  "id": "a3f8b2c1e7d9...",
   "type": "hail",
   "geo": {
     "lat": 31.02,
     "lon": -98.44
   },
-  "magnitude": 1.25,
-  "unit": "in",
-  "begin_time": "2024-04-26T15:10:00Z",
-  "end_time": "2024-04-26T15:10:00Z",
-  "source": "mock",
+  "measurement": {
+    "magnitude": 1.25,
+    "unit": "in",
+    "severity": "moderate"
+  },
+  "begin_time": "2026-01-01T15:10:00Z",
+  "end_time": "2026-01-01T15:10:00Z",
+  "source": "spc",
   "location": {
     "raw": "8 ESE Chappel",
     "name": "Chappel",
@@ -36,20 +39,21 @@ Each Kafka message on the `transformed-weather-data` topic is a single JSON obje
     "county": "San Saba"
   },
   "comments": "1.25 inch hail reported at Colorado Bend State Park. (SJT)",
-  "severity": "moderate",
   "source_office": "SJT",
-  "time_bucket": "2024-04-26T15:00:00Z",
-  "processed_at": "2024-04-26T22:00:00Z",
-  "formatted_address": "",
-  "place_name": "",
-  "geo_confidence": 0,
-  "geo_source": ""
+  "time_bucket": "2026-01-01T15:00:00Z",
+  "processed_at": "2026-01-01T22:00:00Z",
+  "geocoding": {
+    "formatted_address": "",
+    "place_name": "",
+    "confidence": 0,
+    "source": ""
+  }
 }
 ```
 
 ## Event Types
 
-| Type | `magnitude` meaning | `unit` |
+| Type | `measurement.magnitude` meaning | `measurement.unit` |
 |------|---------------------|--------|
 | `hail` | Hail stone diameter | `in` (inches) |
 | `tornado` | F/EF scale rating | `f_scale` |
@@ -61,9 +65,10 @@ A magnitude of `0` means the value was not measured or not applicable.
 
 | Field | When absent |
 |-------|-------------|
-| `severity` | Not assigned to all report types (absent on most tornado and some wind reports) |
+| `measurement.severity` | Magnitude is 0 or unmeasured |
 | `location.distance` | Report is at the named location itself (no offset) |
 | `location.direction` | Report is at the named location itself (no offset) |
+| `geocoding` | Geocoding disabled or all fields are zero-valued |
 
 ## Database Column Mapping
 
@@ -75,17 +80,20 @@ Nested JSON fields are flattened in PostgreSQL:
 | `type` | `type` |
 | `geo.lat` | `geo_lat` |
 | `geo.lon` | `geo_lon` |
+| `measurement.magnitude` | `measurement_magnitude` |
+| `measurement.unit` | `measurement_unit` |
+| `measurement.severity` | `measurement_severity` |
 | `location.raw` | `location_raw` |
 | `location.name` | `location_name` |
 | `location.distance` | `location_distance` |
 | `location.direction` | `location_direction` |
 | `location.state` | `location_state` |
 | `location.county` | `location_county` |
-| `formatted_address` | `formatted_address` |
-| `place_name` | `place_name` |
-| `geo_confidence` | `geo_confidence` |
-| `geo_source` | `geo_source` |
-| _(all other fields)_ | _(same name, snake_case)_ |
+| `geocoding.formatted_address` | `geocoding_formatted_address` |
+| `geocoding.place_name` | `geocoding_place_name` |
+| `geocoding.confidence` | `geocoding_confidence` |
+| `geocoding.source` | `geocoding_source` |
+| All other fields | Same name (snake_case) |
 
 ## Mock Data Summary
 

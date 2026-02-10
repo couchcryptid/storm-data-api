@@ -69,7 +69,7 @@ All configuration is via environment variables with local dev defaults:
 | `DATABASE_URL`     | `postgres://storm:storm@localhost:5432/stormdata?sslmode=disable` | PostgreSQL connection string                  |
 | `KAFKA_BROKERS`    | `localhost:29092`                                                | Comma-separated list of Kafka broker addresses |
 | `KAFKA_TOPIC`      | `transformed-weather-data`                                       | Topic to consume enriched events from          |
-| `KAFKA_GROUP_ID`   | `storm-data-graphql-api`                                         | Consumer group ID                              |
+| `KAFKA_GROUP_ID`   | `storm-data-api`                                         | Consumer group ID                              |
 | `LOG_LEVEL`        | `info`                                                           | Log level: `debug`, `info`, `warn`, `error`    |
 | `LOG_FORMAT`       | `json`                                                           | Log format: `json` or `text`                   |
 | `SHUTDOWN_TIMEOUT` | `10s`                                                            | Graceful shutdown deadline                     |
@@ -87,13 +87,13 @@ All configuration is via environment variables with local dev defaults:
 
 | Metric                                | Type      | Labels                       | Description                                |
 | ------------------------------------- | --------- | ---------------------------- | ------------------------------------------ |
-| `api_http_requests_total`             | Counter   | `method`, `path`, `status`   | Total HTTP requests processed              |
-| `api_http_request_duration_seconds`   | Histogram | `method`, `path`             | HTTP request duration                      |
-| `api_kafka_messages_consumed_total`   | Counter   | `topic`                      | Total Kafka messages consumed              |
-| `api_kafka_consumer_errors_total`     | Counter   | `topic`, `error_type`        | Total Kafka consumer errors                |
-| `api_kafka_consumer_running`          | Gauge     | `topic`                      | `1` when the Kafka consumer is running     |
-| `api_db_query_duration_seconds`       | Histogram | `operation`                  | Database query duration                    |
-| `api_db_pool_connections`             | Gauge     | `state`                      | Database connection pool statistics        |
+| `storm_api_http_requests_total`             | Counter   | `method`, `path`, `status`   | Total HTTP requests processed              |
+| `storm_api_http_request_duration_seconds`   | Histogram | `method`, `path`             | HTTP request duration                      |
+| `storm_api_kafka_messages_consumed_total`   | Counter   | `topic`                      | Total Kafka messages consumed              |
+| `storm_api_kafka_consumer_errors_total`     | Counter   | `topic`, `error_type`        | Total Kafka consumer errors                |
+| `storm_api_kafka_consumer_running`          | Gauge     | `topic`                      | `1` when the Kafka consumer is running     |
+| `storm_api_db_query_duration_seconds`       | Histogram | `operation`                  | Database query duration                    |
+| `storm_api_db_pool_connections`             | Gauge     | `state`                      | Database connection pool statistics        |
 
 ## Development
 

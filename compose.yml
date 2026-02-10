@@ -1,6 +1,7 @@
 services:
   postgres:
     image: postgres:16
+    container_name: postgres
     env_file: .env.postgres
     ports:
       - "5432:5432"
@@ -39,9 +40,9 @@ services:
         reservations:
           memory: 512M
 
-  api:
+  storm-data-api:
     build: .
-    container_name: storm-data-graphql-api
+    container_name: storm-data-api
     ports:
       - "8080:8080"
     env_file: .env

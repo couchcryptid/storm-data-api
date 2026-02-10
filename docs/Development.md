@@ -11,7 +11,7 @@
 
 ```sh
 git clone <repo-url>
-cd storm-data-graphql-api
+cd storm-data-api
 make docker-up   # Start Postgres + Kafka
 make run         # Start server (runs migrations automatically)
 ```

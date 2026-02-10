@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/couchcryptid/storm-data-graphql-api/internal/model"
-	"github.com/couchcryptid/storm-data-graphql-api/internal/observability"
+	"github.com/couchcryptid/storm-data-api/internal/model"
+	"github.com/couchcryptid/storm-data-api/internal/observability"
 	kafkago "github.com/segmentio/kafka-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

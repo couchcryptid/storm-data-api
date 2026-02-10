@@ -7,7 +7,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
-const namespace = "api"
+const namespace = "storm_api"
 
 // ReadinessChecker reports whether a dependency is ready to serve traffic.
 type ReadinessChecker interface {

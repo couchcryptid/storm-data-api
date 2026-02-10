@@ -17,11 +17,11 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
-	"github.com/couchcryptid/storm-data-graphql-api/internal/database"
-	"github.com/couchcryptid/storm-data-graphql-api/internal/graph"
-	"github.com/couchcryptid/storm-data-graphql-api/internal/model"
-	"github.com/couchcryptid/storm-data-graphql-api/internal/observability"
-	"github.com/couchcryptid/storm-data-graphql-api/internal/store"
+	"github.com/couchcryptid/storm-data-api/internal/database"
+	"github.com/couchcryptid/storm-data-api/internal/graph"
+	"github.com/couchcryptid/storm-data-api/internal/model"
+	"github.com/couchcryptid/storm-data-api/internal/observability"
+	"github.com/couchcryptid/storm-data-api/internal/store"
 
 	kafkago "github.com/segmentio/kafka-go"
 	"github.com/stretchr/testify/assert"

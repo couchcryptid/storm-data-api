@@ -39,7 +39,7 @@ Six indexes cover the primary query patterns:
 | `idx_begin_time` | `begin_time` | Time range filters (always present) |
 | `idx_type` | `type` | Type filter |
 | `idx_state` | `location_state` | State filter |
-| `idx_severity` | `severity` | Severity filter |
+| `idx_severity` | `measurement_severity` | Severity filter |
 | `idx_type_state_time` | `type, location_state, begin_time` | Combined type + state + time filter |
 | `idx_geo` | `geo_lat, geo_lon` | Bounding-box pre-filter for radius queries |
 
@@ -56,7 +56,7 @@ The server enforces two limits to prevent pathological queries:
 | Protection | Value | Effect |
 |---|---|---|
 | **Depth limit** | 7 levels | Rejects deeply nested queries before execution |
-| **Complexity limit** | 1100 points | Rejects queries that would be too expensive |
+| **Complexity limit** | 600 points | Rejects queries that would be too expensive |
 | **HTTP timeout** | 25 seconds | Aborts any request exceeding the deadline |
 
 ### Complexity Multipliers
@@ -72,7 +72,7 @@ The complexity budget models the cost of list fields:
 | `byHour` | 10x child complexity | Up to 24 hourly buckets |
 | `counties` (within `byState`) | 5x child complexity | Counties per state |
 
-A typical full query with one filter costs approximately 500 complexity points. With two filters requesting all fields (including geocoding), worst-case is ~985 points, leaving headroom under the 1100-point limit.
+A typical full query with one filter costs approximately 250 complexity points. The 600-point limit accommodates standard queries while rejecting pathological ones.
 
 ## Write Path: Kafka Consumer
 
@@ -162,22 +162,22 @@ Use the Prometheus metrics to observe actual performance:
 
 ```promql
 # HTTP request rate by path and status
-rate(api_http_requests_total[1m])
+rate(storm_api_http_requests_total[1m])
 
 # HTTP request latency (p99)
-histogram_quantile(0.99, rate(api_http_request_duration_seconds_bucket[5m]))
+histogram_quantile(0.99, rate(storm_api_http_request_duration_seconds_bucket[5m]))
 
 # Database query latency by operation (p99)
-histogram_quantile(0.99, rate(api_db_query_duration_seconds_bucket[5m]))
+histogram_quantile(0.99, rate(storm_api_db_query_duration_seconds_bucket[5m]))
 
 # Database connection pool utilization
-api_db_pool_connections{state="active"} / api_db_pool_connections{state="total"}
+storm_api_db_pool_connections{state="active"} / storm_api_db_pool_connections{state="total"}
 
 # Kafka consumer throughput
-rate(api_kafka_messages_consumed_total[1m])
+rate(storm_api_kafka_messages_consumed_total[1m])
 
 # Kafka consumer health
-api_kafka_consumer_running
+storm_api_kafka_consumer_running
 ```
 
-The `api_http_request_duration_seconds` and `api_db_query_duration_seconds` histogram buckets (`1ms, 5ms, 10ms, 50ms, 100ms, 500ms, 1s, 5s`) are tuned for the expected latency range of database-backed GraphQL queries.
+The `storm_api_http_request_duration_seconds` and `storm_api_db_query_duration_seconds` histogram buckets (`1ms, 5ms, 10ms, 50ms, 100ms, 500ms, 1s, 5s`) are tuned for the expected latency range of database-backed GraphQL queries.

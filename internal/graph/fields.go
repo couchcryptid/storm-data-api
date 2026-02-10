@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/couchcryptid/storm-data-graphql-api/internal/model"
-	"github.com/couchcryptid/storm-data-graphql-api/internal/store"
+	"github.com/couchcryptid/storm-data-api/internal/model"
+	"github.com/couchcryptid/storm-data-api/internal/store"
 )
 
 // collectFields returns the set of field names requested on StormReportsResult,
