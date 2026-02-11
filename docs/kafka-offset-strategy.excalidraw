@@ -20,14 +20,22 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "seed": 2001,
       "version": 1,
       "versionNonce": 2001,
       "isDeleted": false,
       "boundElements": [
-        { "type": "text", "id": "fetch-text" },
-        { "type": "arrow", "id": "arrow-fetch-unmarshal" }
+        {
+          "type": "text",
+          "id": "fetch-text"
+        },
+        {
+          "type": "arrow",
+          "id": "arrow-fetch-unmarshal"
+        }
       ],
       "updated": 1,
       "link": null,
@@ -86,16 +94,30 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "seed": 2003,
       "version": 1,
       "versionNonce": 2003,
       "isDeleted": false,
       "boundElements": [
-        { "type": "text", "id": "unmarshal-text" },
-        { "type": "arrow", "id": "arrow-fetch-unmarshal" },
-        { "type": "arrow", "id": "arrow-unmarshal-insert" },
-        { "type": "arrow", "id": "arrow-unmarshal-poison" }
+        {
+          "type": "text",
+          "id": "unmarshal-text"
+        },
+        {
+          "type": "arrow",
+          "id": "arrow-fetch-unmarshal"
+        },
+        {
+          "type": "arrow",
+          "id": "arrow-unmarshal-insert"
+        },
+        {
+          "type": "arrow",
+          "id": "arrow-unmarshal-poison"
+        }
       ],
       "updated": 1,
       "link": null,
@@ -154,16 +176,30 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "seed": 2005,
       "version": 1,
       "versionNonce": 2005,
       "isDeleted": false,
       "boundElements": [
-        { "type": "text", "id": "insert-text" },
-        { "type": "arrow", "id": "arrow-unmarshal-insert" },
-        { "type": "arrow", "id": "arrow-insert-commit" },
-        { "type": "arrow", "id": "arrow-insert-dberror" }
+        {
+          "type": "text",
+          "id": "insert-text"
+        },
+        {
+          "type": "arrow",
+          "id": "arrow-unmarshal-insert"
+        },
+        {
+          "type": "arrow",
+          "id": "arrow-insert-commit"
+        },
+        {
+          "type": "arrow",
+          "id": "arrow-insert-dberror"
+        }
       ],
       "updated": 1,
       "link": null,
@@ -222,14 +258,22 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "seed": 2007,
       "version": 1,
       "versionNonce": 2007,
       "isDeleted": false,
       "boundElements": [
-        { "type": "text", "id": "commit-text" },
-        { "type": "arrow", "id": "arrow-insert-commit" }
+        {
+          "type": "text",
+          "id": "commit-text"
+        },
+        {
+          "type": "arrow",
+          "id": "arrow-insert-commit"
+        }
       ],
       "updated": 1,
       "link": null,
@@ -288,14 +332,22 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "seed": 2009,
       "version": 1,
       "versionNonce": 2009,
       "isDeleted": false,
       "boundElements": [
-        { "type": "text", "id": "poison-text" },
-        { "type": "arrow", "id": "arrow-unmarshal-poison" }
+        {
+          "type": "text",
+          "id": "poison-text"
+        },
+        {
+          "type": "arrow",
+          "id": "arrow-unmarshal-poison"
+        }
       ],
       "updated": 1,
       "link": null,
@@ -345,7 +397,7 @@
       "width": 200,
       "height": 56,
       "angle": 0,
-      "strokeColor": "#c92a2a",
+      "strokeColor": "#e03131",
       "backgroundColor": "#ffc9c9",
       "fillStyle": "solid",
       "strokeWidth": 2,
@@ -354,14 +406,22 @@
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
-      "roundness": { "type": 3 },
+      "roundness": {
+        "type": 3
+      },
       "seed": 2011,
       "version": 1,
       "versionNonce": 2011,
       "isDeleted": false,
       "boundElements": [
-        { "type": "text", "id": "dberror-text" },
-        { "type": "arrow", "id": "arrow-insert-dberror" }
+        {
+          "type": "text",
+          "id": "dberror-text"
+        },
+        {
+          "type": "arrow",
+          "id": "arrow-insert-dberror"
+        }
       ],
       "updated": 1,
       "link": null,
@@ -422,17 +482,34 @@
       "frameId": null,
       "roundness": null,
       "seed": 2013,
-      "version": 1,
+      "version": 3,
       "versionNonce": 2013,
       "isDeleted": false,
       "boundElements": null,
       "updated": 1,
       "link": null,
       "locked": false,
-      "points": [[0, 0], [0, 44]],
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          44
+        ]
+      ],
       "lastCommittedPoint": null,
-      "startBinding": { "elementId": "fetch-box", "focus": 0, "gap": 1 },
-      "endBinding": { "elementId": "unmarshal-box", "focus": 0, "gap": 1 },
+      "startBinding": {
+        "elementId": "fetch-box",
+        "focus": 0,
+        "gap": 1
+      },
+      "endBinding": {
+        "elementId": "unmarshal-box",
+        "focus": 0,
+        "gap": 1
+      },
       "startArrowhead": null,
       "endArrowhead": "arrow",
       "elbowed": true
@@ -456,19 +533,39 @@
       "frameId": null,
       "roundness": null,
       "seed": 2014,
-      "version": 1,
+      "version": 3,
       "versionNonce": 2014,
       "isDeleted": false,
       "boundElements": [
-        { "type": "text", "id": "label-ok-json" }
+        {
+          "type": "text",
+          "id": "label-ok-json"
+        }
       ],
       "updated": 1,
       "link": null,
       "locked": false,
-      "points": [[0, 0], [0, 44]],
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          44
+        ]
+      ],
       "lastCommittedPoint": null,
-      "startBinding": { "elementId": "unmarshal-box", "focus": 0, "gap": 1 },
-      "endBinding": { "elementId": "insert-box", "focus": 0, "gap": 1 },
+      "startBinding": {
+        "elementId": "unmarshal-box",
+        "focus": 0,
+        "gap": 1
+      },
+      "endBinding": {
+        "elementId": "insert-box",
+        "focus": 0,
+        "gap": 1
+      },
       "startArrowhead": null,
       "endArrowhead": "arrow",
       "elbowed": true
@@ -528,19 +625,39 @@
       "frameId": null,
       "roundness": null,
       "seed": 2015,
-      "version": 1,
+      "version": 3,
       "versionNonce": 2015,
       "isDeleted": false,
       "boundElements": [
-        { "type": "text", "id": "label-success" }
+        {
+          "type": "text",
+          "id": "label-success"
+        }
       ],
       "updated": 1,
       "link": null,
       "locked": false,
-      "points": [[0, 0], [0, 44]],
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          44
+        ]
+      ],
       "lastCommittedPoint": null,
-      "startBinding": { "elementId": "insert-box", "focus": 0, "gap": 1 },
-      "endBinding": { "elementId": "commit-box", "focus": 0, "gap": 1 },
+      "startBinding": {
+        "elementId": "insert-box",
+        "focus": 0,
+        "gap": 1
+      },
+      "endBinding": {
+        "elementId": "commit-box",
+        "focus": 0,
+        "gap": 1
+      },
       "startArrowhead": null,
       "endArrowhead": "arrow",
       "elbowed": true
@@ -600,19 +717,39 @@
       "frameId": null,
       "roundness": null,
       "seed": 2016,
-      "version": 1,
+      "version": 3,
       "versionNonce": 2016,
       "isDeleted": false,
       "boundElements": [
-        { "type": "text", "id": "label-bad-json" }
+        {
+          "type": "text",
+          "id": "label-bad-json"
+        }
       ],
       "updated": 1,
       "link": null,
       "locked": false,
-      "points": [[0, 0], [86, 0]],
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          86,
+          0
+        ]
+      ],
       "lastCommittedPoint": null,
-      "startBinding": { "elementId": "unmarshal-box", "focus": 0, "gap": 1 },
-      "endBinding": { "elementId": "poison-box", "focus": 0, "gap": 1 },
+      "startBinding": {
+        "elementId": "unmarshal-box",
+        "focus": 0,
+        "gap": 1
+      },
+      "endBinding": {
+        "elementId": "poison-box",
+        "focus": 0,
+        "gap": 1
+      },
       "startArrowhead": null,
       "endArrowhead": "arrow",
       "elbowed": true
@@ -661,7 +798,7 @@
       "width": 86,
       "height": 0,
       "angle": 0,
-      "strokeColor": "#c92a2a",
+      "strokeColor": "#e03131",
       "backgroundColor": "transparent",
       "fillStyle": "solid",
       "strokeWidth": 2,
@@ -672,19 +809,39 @@
       "frameId": null,
       "roundness": null,
       "seed": 2017,
-      "version": 1,
+      "version": 3,
       "versionNonce": 2017,
       "isDeleted": false,
       "boundElements": [
-        { "type": "text", "id": "label-db-error" }
+        {
+          "type": "text",
+          "id": "label-db-error"
+        }
       ],
       "updated": 1,
       "link": null,
       "locked": false,
-      "points": [[0, 0], [86, 0]],
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          86,
+          0
+        ]
+      ],
       "lastCommittedPoint": null,
-      "startBinding": { "elementId": "insert-box", "focus": 0, "gap": 1 },
-      "endBinding": { "elementId": "dberror-box", "focus": 0, "gap": 1 },
+      "startBinding": {
+        "elementId": "insert-box",
+        "focus": 0,
+        "gap": 1
+      },
+      "endBinding": {
+        "elementId": "dberror-box",
+        "focus": 0,
+        "gap": 1
+      },
       "startArrowhead": null,
       "endArrowhead": "arrow",
       "elbowed": true
@@ -697,7 +854,7 @@
       "width": 60,
       "height": 15,
       "angle": 0,
-      "strokeColor": "#c92a2a",
+      "strokeColor": "#e03131",
       "backgroundColor": "transparent",
       "fillStyle": "solid",
       "strokeWidth": 1,
