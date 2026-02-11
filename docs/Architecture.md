@@ -113,6 +113,74 @@ CREATE TABLE storm_reports (
 | `idx_type_state_time` | `type, location_state, begin_time` | Composite for the typical "type + state + time" filter |
 | `idx_geo` | `geo_lat, geo_lon` | Bounding box pre-filter for radius queries |
 
+## Design Decisions
+
+### Schema-First GraphQL with Direct Model Binding
+
+The GraphQL schema is defined in `.graphqls` files. gqlgen generates the execution engine, but domain models (`internal/model`) are bound directly via `gqlgen.yml` rather than using generated model types.
+
+**Why**: The schema is the API contract — frontend developers can read it without knowing Go. Direct model binding eliminates a translation layer between graph types and domain types. Only one field resolver (`eventType` → `type`) is needed to bridge a naming difference.
+
+### Thin Resolvers
+
+Resolvers contain no business logic. They validate input, delegate to the store, and assemble the response.
+
+**Why**: Keeps the GraphQL layer as a presentation concern. All data access logic lives in the store, which is testable independently of GraphQL.
+
+### Field-Aware Parallel Query Execution
+
+The resolver inspects which GraphQL fields were requested (`collectFields`) and only runs queries for those fields, using `errgroup` for parallel execution.
+
+**Why**: A typical `stormReports` query runs up to 3 parallel database calls (reports, aggregations, meta). If the client only requests `reports`, the aggregation and meta queries never execute. This avoids unnecessary database work while keeping the resolver simple.
+
+### Dynamic WHERE Clause Building
+
+`buildWhereClause` constructs parameterized SQL from the filter struct, using positional `$N` parameters with an incrementing index.
+
+**Why**: The GraphQL filter has many optional fields (time range, states, types, severity, radius). Building WHERE clauses dynamically avoids maintaining dozens of static query variants. Parameterized queries prevent SQL injection.
+
+### Haversine with Bounding Box Pre-filter
+
+Radius queries first apply a rectangular lat/lon bounding box (uses the `idx_geo` B-tree index), then apply the precise haversine great-circle distance formula to the remaining rows.
+
+**Why**: The haversine formula is expensive to compute across every row. The bounding box eliminates most rows cheaply via index scan, limiting haversine computation to a small candidate set. The approximation (`~69 miles/degree`) is sufficient for the pre-filter since haversine corrects the final result.
+
+### Embedded SQL Migrations
+
+Database migrations are embedded into the binary via `//go:embed` and run automatically on startup using `golang-migrate`.
+
+**Why**: The binary is self-contained — no external migration files to deploy or keep in sync. Migrations run before the server accepts traffic, ensuring the schema is always up to date.
+
+### Idempotent Writes
+
+All inserts use `ON CONFLICT (id) DO NOTHING` with deterministic SHA-256 IDs.
+
+**Why**: Combined with at-least-once Kafka delivery, this makes the write path naturally idempotent. Duplicate messages (from consumer restarts or rebalances) are silently deduplicated. No additional deduplication infrastructure needed.
+
+### Query Protection Layers
+
+Three layers protect against expensive or abusive queries:
+
+1. **Complexity budget** (600) — gqlgen estimates query cost based on field weights; queries exceeding the budget are rejected before execution
+2. **Depth limit** (7) — prevents deeply nested queries
+3. **Concurrency limit** (2) — a channel-based semaphore in Chi middleware returns 503 when all slots are occupied
+
+**Why**: GraphQL's flexibility makes it easy for clients to construct queries that are expensive to resolve. These limits bound the worst case without restricting normal usage patterns.
+
+### Batch Kafka Consumer
+
+The consumer fetches messages in time-bounded batches (configurable via `BATCH_SIZE` and `BATCH_FLUSH_INTERVAL`), inserts them in a single `pgx.Batch` call, and commits offsets only after successful insertion.
+
+**Why**: Batch database writes amortize connection overhead and reduce round trips. Time-bounded fetching ensures partial batches are flushed promptly rather than waiting indefinitely for a full batch.
+
+## Capacity
+
+SPC data volumes are small (~1,000--5,000 records/day during storm season). The Kafka consumer processes an entire day's data in under 1 minute. The GraphQL read path executes 5 parallel database queries per filter via `errgroup`, typically completing in 2--50 ms. Six indexes cover the primary query patterns (see above).
+
+The 256 MB container memory limit provides 4--12x headroom over the ~20--60 MB steady-state footprint. The write path is over-provisioned for expected load; read path performance depends on dataset size and query complexity.
+
+For horizontal scaling on the write path, deploy multiple instances with Kafka consumer groups (`KAFKA_GROUP_ID`). Read path scaling is handled by adding API replicas behind a load balancer.
+
 ## Kafka Consumer Offset Strategy
 
 ![Kafka Offset Strategy](kafka-offset-strategy.excalidraw.svg)

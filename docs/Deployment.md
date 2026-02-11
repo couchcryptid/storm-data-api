@@ -81,13 +81,6 @@ docker run -p 8080:8080 \
 | `.env.postgres` | `postgres` container       | `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` |
 | `.env.kafka`    | `kafka` container          | Kafka KRaft broker settings (listeners, controller, replication) |
 
-## Production Considerations
+## Production
 
-- Replace the single-node Kafka setup with a managed Kafka service or multi-broker cluster
-- Use a managed PostgreSQL instance with connection pooling (e.g. PgBouncer)
-- Set `KAFKA_AUTO_CREATE_TOPICS_ENABLE=false` and pre-create topics with appropriate partition counts and replication factors
-- Configure `KAFKA_GROUP_ID` per environment to isolate consumer groups
-- Set `LOG_FORMAT=json` for structured log aggregation
-- Monitor the Prometheus metrics endpoint with your observability stack
-- Database migrations run automatically on startup -- ensure the database user has DDL permissions
-- Consider running multiple API instances for horizontal scaling (Kafka consumer groups handle partition assignment automatically)
+For cloud deployment options and cost analysis, see the [system Architecture wiki](https://github.com/couchcryptid/storm-data-system/wiki/Architecture#gcp-cloud-cost-analysis). Database migrations run automatically on startup -- ensure the database user has DDL permissions.

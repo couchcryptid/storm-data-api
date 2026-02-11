@@ -4,10 +4,9 @@ A Go service that consumes transformed storm weather reports from a Kafka topic,
 
 ## Pages
 
-- [[Architecture]] -- Project structure, layer responsibilities, database schema
+- [[Architecture]] -- Project structure, layer responsibilities, database schema, and capacity
 - [[Configuration]] -- Environment variables
-- [[Deployment]] -- Docker Compose setup and production considerations
+- [[Deployment]] -- Docker Compose setup and Docker image
 - [[Development]] -- Build, test, lint, CI, and project conventions
 - [[Data Model]] -- Kafka message shape, event types, field mapping
 - [[API Reference]] -- GraphQL types, queries, filter options
-- [[Performance]] -- Query performance, scaling, and bottleneck analysis

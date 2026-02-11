@@ -73,6 +73,8 @@ All configuration is via environment variables with local dev defaults:
 | `LOG_LEVEL`        | `info`                                                           | Log level: `debug`, `info`, `warn`, `error`    |
 | `LOG_FORMAT`       | `json`                                                           | Log format: `json` or `text`                   |
 | `SHUTDOWN_TIMEOUT` | `10s`                                                            | Graceful shutdown deadline                     |
+| `BATCH_SIZE`       | `50`                                                             | Kafka messages per batch (1--1000)             |
+| `BATCH_FLUSH_INTERVAL` | `500ms`                                                      | Max wait before flushing a partial batch       |
 
 ## HTTP Endpoints
 
@@ -92,6 +94,8 @@ All configuration is via environment variables with local dev defaults:
 | `storm_api_kafka_messages_consumed_total`   | Counter   | `topic`                      | Total Kafka messages consumed              |
 | `storm_api_kafka_consumer_errors_total`     | Counter   | `topic`, `error_type`        | Total Kafka consumer errors                |
 | `storm_api_kafka_consumer_running`          | Gauge     | `topic`                      | `1` when the Kafka consumer is running     |
+| `storm_api_kafka_batch_size`                | Histogram | --                           | Number of messages per batch               |
+| `storm_api_kafka_batch_duration_seconds`    | Histogram | --                           | Duration of batch processing               |
 | `storm_api_db_query_duration_seconds`       | Histogram | `operation`                  | Database query duration                    |
 | `storm_api_db_pool_connections`             | Gauge     | `state`                      | Database connection pool statistics        |
 
@@ -131,10 +135,9 @@ data/mock/                  Sample storm report JSON for testing
 
 See the [project wiki](../../wiki) for detailed documentation:
 
-- [Architecture](../../wiki/Architecture) -- Project structure, layer responsibilities, database schema
+- [Architecture](../../wiki/Architecture) -- Project structure, layer responsibilities, database schema, and capacity
 - [Configuration](../../wiki/Configuration) -- Environment variables
-- [Deployment](../../wiki/Deployment) -- Docker Compose setup and production considerations
+- [Deployment](../../wiki/Deployment) -- Docker Compose setup and Docker image
 - [Development](../../wiki/Development) -- Build, test, lint, CI, and project conventions
 - [Data Model](../../wiki/Data-Model) -- Kafka message shape, event types, field mapping
 - [API Reference](../../wiki/API-Reference) -- GraphQL types, queries, filter options
-- [Performance](../../wiki/Performance) -- Query performance, scaling, and bottleneck analysis
