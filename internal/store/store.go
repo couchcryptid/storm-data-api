@@ -14,12 +14,21 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-const columns = `id, type, geo_lat, geo_lon, measurement_magnitude, measurement_unit,
+const (
+	columns = `id, type, geo_lat, geo_lon, measurement_magnitude, measurement_unit,
 	begin_time, end_time, source,
 	location_raw, location_name, location_distance, location_direction,
 	location_state, location_county,
 	comments, measurement_severity, source_office, time_bucket, processed_at,
 	geocoding_formatted_address, geocoding_place_name, geocoding_confidence, geocoding_source`
+
+	// earthRadiusMiles is used by the haversine formula for great-circle distance.
+	earthRadiusMiles = 3959.0
+
+	// milesPerDegreeLat approximates the miles-per-degree latitude (~69 mi).
+	// Used by bounding-box pre-filtering for B-tree index utilization.
+	milesPerDegreeLat = 69.0
+)
 
 // Store provides persistence operations for storm reports backed by PostgreSQL.
 type Store struct {
@@ -37,6 +46,9 @@ func (s *Store) observeQuery(operation string, start time.Time) {
 }
 
 // InsertStormReport upserts a storm report into the database.
+// IDs are deterministic SHA-256 hashes (type+state+coords+time), so identical
+// events always produce the same ID. ON CONFLICT DO NOTHING makes inserts
+// idempotent, which is safe for Kafka's at-least-once delivery.
 func (s *Store) InsertStormReport(ctx context.Context, report *model.StormReport) error {
 	defer s.observeQuery("insert", time.Now())
 	_, err := s.pool.Exec(ctx, `
@@ -84,11 +96,11 @@ func (s *Store) InsertStormReports(ctx context.Context, reports []*model.StormRe
 		)
 	}
 
-	br := s.pool.SendBatch(ctx, batch)
-	defer br.Close()
+	batchResults := s.pool.SendBatch(ctx, batch)
+	defer batchResults.Close()
 
 	for range reports {
-		if _, err := br.Exec(); err != nil {
+		if _, err := batchResults.Exec(); err != nil {
 			return fmt.Errorf("batch insert: %w", err)
 		}
 	}
@@ -106,6 +118,7 @@ func buildWhereSQL(clauses []string) string {
 
 // buildWhereClause constructs the WHERE clause and args from a filter.
 // Returns the clauses, args, and the next parameter index.
+// idx tracks the PostgreSQL positional parameter number ($1, $2, …).
 func buildWhereClause(filter *model.StormReportFilter) ([]string, []any, int) {
 	var where []string
 	var args []any
@@ -133,13 +146,13 @@ func buildWhereClause(filter *model.StormReportFilter) ([]string, []any, int) {
 	}
 
 	if len(filter.EventTypeFilters) > 0 {
-		// Mode 2: Per-type OR conditions with optional per-type radius
+		// Per-type OR filtering: each event type can have its own severity/magnitude/radius
 		clause, newArgs, newIdx := buildEventTypeConditions(filter, args, idx)
 		where = append(where, clause...)
 		args = newArgs
 		idx = newIdx
 	} else {
-		// Mode 1: Simple AND conditions
+		// Simple AND filtering: global filters apply uniformly to all event types
 		if len(filter.EventTypes) > 0 {
 			where = append(where, fmt.Sprintf("type = ANY($%d)", idx))
 			args = append(args, eventTypeDBValues(filter.EventTypes))
@@ -182,21 +195,21 @@ func collectTypeConditions(filter *model.StormReportFilter) []typeCondition {
 	overrideSet := make(map[model.EventType]bool)
 	conditions := make([]typeCondition, 0, len(filter.EventTypeFilters)+len(filter.EventTypes))
 
-	for _, etf := range filter.EventTypeFilters {
-		overrideSet[etf.EventType] = true
-		tc := typeCondition{eventType: etf.EventType}
-		if len(etf.Severity) > 0 {
-			tc.severity = etf.Severity
+	for _, typeFilter := range filter.EventTypeFilters {
+		overrideSet[typeFilter.EventType] = true
+		tc := typeCondition{eventType: typeFilter.EventType}
+		if len(typeFilter.Severity) > 0 {
+			tc.severity = typeFilter.Severity
 		} else {
 			tc.severity = filter.Severity
 		}
-		if etf.MinMagnitude != nil {
-			tc.minMag = etf.MinMagnitude
+		if typeFilter.MinMagnitude != nil {
+			tc.minMag = typeFilter.MinMagnitude
 		} else {
 			tc.minMag = filter.MinMagnitude
 		}
-		if etf.RadiusMiles != nil {
-			tc.radiusMiles = etf.RadiusMiles
+		if typeFilter.RadiusMiles != nil {
+			tc.radiusMiles = typeFilter.RadiusMiles
 		} else if filter.Near != nil {
 			tc.radiusMiles = filter.Near.RadiusMiles
 		}
@@ -299,8 +312,8 @@ func buildGeoClause(lat, lon float64, radiusMiles *float64, idx int) ([]string, 
 // box leverages the (geo_lat, geo_lon) B-tree index to quickly eliminate rows
 // outside the search area before the expensive haversine runs on the remainder.
 func buildBoundingBox(lat, lon, radiusMiles float64, idx int) ([]string, []any, int) {
-	latDelta := radiusMiles / 69.0
-	lonDelta := radiusMiles / (69.0 * math.Cos(lat*math.Pi/180.0))
+	latDelta := radiusMiles / milesPerDegreeLat
+	lonDelta := radiusMiles / (milesPerDegreeLat * math.Cos(lat*math.Pi/180.0))
 	clause := fmt.Sprintf(
 		"geo_lat BETWEEN $%d AND $%d AND geo_lon BETWEEN $%d AND $%d",
 		idx, idx+1, idx+2, idx+3)
@@ -315,15 +328,14 @@ type haversineResult struct {
 }
 
 // buildHaversine builds a haversine great-circle distance clause.
-// 3959 is the Earth's mean radius in miles.
 func buildHaversine(lat, lon, radiusMiles float64, idx int) haversineResult {
 	clause := fmt.Sprintf(`(
-		3959 * acos(
+		%v * acos(
 			cos(radians($%d)) * cos(radians(geo_lat)) *
 			cos(radians(geo_lon) - radians($%d)) +
 			sin(radians($%d)) * sin(radians(geo_lat))
 		)
-	) <= $%d`, idx, idx+1, idx+2, idx+3)
+	) <= $%d`, earthRadiusMiles, idx, idx+1, idx+2, idx+3)
 	return haversineResult{
 		clause:  clause,
 		args:    []any{lat, lon, lat, radiusMiles},
@@ -494,19 +506,19 @@ func (s *Store) Aggregations(ctx context.Context, filter *model.StormReportFilte
 		switch agg {
 		case "type":
 			etg := &model.EventTypeGroup{
-				EventType: deref(key1),
+				EventType: stringOrEmpty(key1),
 				Count:     count,
 			}
 			if maxMag != nil {
 				etg.MaxMeasurement = &model.Measurement{
 					Magnitude: *maxMag,
-					Unit:      unitForEventType(deref(key1)),
+					Unit:      unitForEventType(stringOrEmpty(key1)),
 				}
 			}
 			result.ByEventType = append(result.ByEventType, etg)
 		case "state":
-			state := deref(key1)
-			county := deref(key2)
+			state := stringOrEmpty(key1)
+			county := stringOrEmpty(key2)
 			sg, ok := stateMap[state]
 			if !ok {
 				sg = &model.StateGroup{State: state}
@@ -538,7 +550,7 @@ func (s *Store) Aggregations(ctx context.Context, filter *model.StormReportFilte
 	return result, nil
 }
 
-func deref(s *string) string {
+func stringOrEmpty(s *string) string {
 	if s == nil {
 		return ""
 	}

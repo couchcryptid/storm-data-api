@@ -10,7 +10,15 @@ import "github.com/couchcryptid/storm-data-api/internal/model"
 //   - ByEventType/ByState/ByHour: up to 10 groups each
 //   - Counties: up to 5 per state
 //
-// Worst-case cost: 1 + 20*(1+1+1+1+1+1+1+1+1+1+1) + 10*(1+1+1) + 10*(1+5*1) + 10*(1+1) + 1 + 1 ≈ 537.
+// Worst-case cost breakdown (budget = 600):
+//
+//	Query.stormReports:            1
+//	Reports (20 items x 11 fields): 220   — id, type, geo, measurement, beginTime, endTime, source, sourceOffice, location, comments, geocoding
+//	ByEventType (10 x 3 fields):    30
+//	ByState     (10 x (1 + 5*1)):   60    — state + up to 5 counties
+//	ByHour      (10 x 2 fields):    20
+//	totalCount, meta, hasMore:       3
+//	≈ 334–537 depending on requested fields
 func NewComplexityRoot() ComplexityRoot {
 	return ComplexityRoot{
 		Query: struct {

@@ -65,6 +65,8 @@ func (bc *BatchConsumer) Run(ctx context.Context) error {
 	bc.metrics.KafkaConsumerRunning.WithLabelValues(bc.topic).Set(1)
 	defer bc.metrics.KafkaConsumerRunning.WithLabelValues(bc.topic).Set(0)
 
+	// Exponential backoff: start at 200ms, double each retry, cap at 5s.
+	// Keeps retry storms short while avoiding tight loops during Kafka outages.
 	backoff := 200 * time.Millisecond
 	maxBackoff := 5 * time.Second
 
@@ -163,7 +165,9 @@ func (bc *BatchConsumer) processBatch(ctx context.Context, items []batchItem) {
 		}
 	}
 
-	// Commit poison pills to avoid reprocessing.
+	// Commit poison pills so Kafka doesn't re-deliver them in an infinite loop.
+	// Bad messages are logged above for manual investigation; skipping them is
+	// preferable to blocking the entire consumer on unrecoverable parse errors.
 	if len(poisonMsgs) > 0 {
 		if err := bc.reader.CommitMessages(ctx, poisonMsgs...); err != nil {
 			bc.logger.Error("commit poison pills", "error", err, "count", len(poisonMsgs))

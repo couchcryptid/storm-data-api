@@ -87,7 +87,11 @@ func main() {
 		}
 	}()
 
-	// GraphQL server
+	// GraphQL server with three layers of query protection:
+	//  1. Complexity limit (600): caps total field cost to prevent wide/expensive queries
+	//  2. Depth limit (7): caps nesting depth to prevent deeply recursive queries
+	//  3. Concurrency limit (2): caps parallel queries to prevent pgx pool exhaustion
+	//     (4 pool connections − 1 reserved for Kafka − 1 buffer = 2 for GraphQL)
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{
 		Resolvers:  &graph.Resolver{Store: s},
 		Complexity: graph.NewComplexityRoot(),
@@ -100,7 +104,7 @@ func main() {
 	r.Use(middleware.Recoverer)
 	r.Use(cors.AllowAll().Handler)
 	r.Use(observability.MetricsMiddleware(metrics))
-	r.Use(graph.ConcurrencyLimit(2))
+	r.Use(graph.ConcurrencyLimit(2)) // see comment above for pool math
 	r.Handle("/", playground.Handler("Storm Data API", "/query"))
 	r.Handle("/query", srv)
 	r.Get("/healthz", observability.LivenessHandler())

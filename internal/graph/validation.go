@@ -37,14 +37,14 @@ func ValidateFilter(filter *model.StormReportFilter) error {
 		return fmt.Errorf("at most %d eventTypeFilters allowed", MaxEventTypeFilters)
 	}
 	seen := make(map[model.EventType]bool)
-	for i, etf := range filter.EventTypeFilters {
-		if seen[etf.EventType] {
-			return fmt.Errorf("eventTypeFilters[%d]: duplicate eventType %s", i, etf.EventType)
+	for i, typeFilter := range filter.EventTypeFilters {
+		if seen[typeFilter.EventType] {
+			return fmt.Errorf("eventTypeFilters[%d]: duplicate eventType %s", i, typeFilter.EventType)
 		}
-		seen[etf.EventType] = true
+		seen[typeFilter.EventType] = true
 
 		// Per-type radius cap
-		if etf.RadiusMiles != nil && *etf.RadiusMiles > MaxRadiusMiles {
+		if typeFilter.RadiusMiles != nil && *typeFilter.RadiusMiles > MaxRadiusMiles {
 			return fmt.Errorf("eventTypeFilters[%d]: radiusMiles exceeds maximum of %.0f", i, MaxRadiusMiles)
 		}
 	}
