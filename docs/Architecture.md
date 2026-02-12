@@ -157,6 +157,8 @@ Radius queries first apply a rectangular lat/lon bounding box (uses the `idx_geo
 
 **Why**: The haversine formula is expensive to compute across every row. The bounding box eliminates most rows cheaply via index scan, limiting haversine computation to a small candidate set. The approximation (`~69 miles/degree`) is sufficient for the pre-filter since haversine corrects the final result.
 
+**Scaling note**: For the current dataset size (~300 events/day), a composite B-tree index on `(geo_lat, geo_lon)` with bounding-box pre-filter is sufficient and avoids adding PostGIS as a dependency. At significantly larger scale, a PostGIS `geography` column with GIST index would enable native spatial operators (`ST_DWithin`) with better performance characteristics for dense datasets and would support dynamic vector tile rendering via `ST_AsMVT`.
+
 ### Embedded SQL Migrations
 
 Database migrations are embedded into the binary via `//go:embed` and run automatically on startup using `golang-migrate`.
