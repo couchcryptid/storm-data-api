@@ -41,8 +41,8 @@ func Load() (*Config, error) {
 
 	cfg := &Config{
 		Port:               sharedcfg.EnvOrDefault("PORT", "8080"),
-		DatabaseURL:        sharedcfg.EnvOrDefault("DATABASE_URL", "postgres://storm:storm@localhost:5432/stormdata?sslmode=disable"),
-		KafkaBrokers:       sharedcfg.ParseBrokers(sharedcfg.EnvOrDefault("KAFKA_BROKERS", "localhost:29092")),
+		DatabaseURL:        sharedcfg.EnvOrDefault("DATABASE_URL", "postgres://storm:storm@postgres:5432/stormdata?sslmode=disable"),
+		KafkaBrokers:       sharedcfg.ParseBrokers(sharedcfg.EnvOrDefault("KAFKA_BROKERS", "kafka:9092")),
 		KafkaTopic:         sharedcfg.EnvOrDefault("KAFKA_TOPIC", "transformed-weather-data"),
 		KafkaGroupID:       sharedcfg.EnvOrDefault("KAFKA_GROUP_ID", "storm-data-api"),
 		LogLevel:           sharedcfg.EnvOrDefault("LOG_LEVEL", "info"),

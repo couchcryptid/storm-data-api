@@ -6,38 +6,6 @@ Kafka (enriched) ──> Consumer ──> Store ──> PostgreSQL
        GraphQL /query ──> Resolvers─┘
 ```
 
-## Project Structure
-
-```
-cmd/server/main.go              Entry point, wires all components
-internal/
-  config/config.go              Environment-based configuration (uses storm-data-shared/config)
-  model/storm_report.go         Domain types (StormReport, Geo, Location, Filter)
-  database/
-    db.go                       pgx connection pool + migration runner
-    readiness.go                Readiness checker (implements storm-data-shared ReadinessChecker)
-    migrations/                 Embedded SQL migration files
-  store/
-    store.go                    Store type, CRUD operations, row scanning
-    querybuilder.go             WHERE clause construction, geo/haversine, sorting
-    aggregations.go             CTE aggregation queries and result types
-  graph/
-    schema.graphqls             GraphQL schema definition (source of truth for API)
-    resolver.go                 Resolver struct with store dependency
-    schema.resolvers.go         Query resolver implementations
-    generated.go                gqlgen generated execution engine (DO NOT EDIT)
-    models_gen.go               gqlgen generated models (DO NOT EDIT)
-  kafka/consumer.go             Kafka consumer with manual offset commit
-  integration/                  Integration tests using testcontainers-go
-  observability/
-    logging.go                  Delegates to storm-data-shared for slog logger creation
-    health.go                   Delegates to storm-data-shared for health endpoints
-    metrics.go                  Prometheus metric definitions (service-specific)
-    middleware.go               Chi HTTP metrics middleware
-data/mock/
-  storm_reports_240426_transformed.json   Mock data (source of truth for message shape)
-```
-
 ## Layer Responsibilities
 
 ### Model (`internal/model`)

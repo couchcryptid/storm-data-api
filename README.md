@@ -61,13 +61,13 @@ make run          # Start server (runs migrations automatically)
 
 ## Configuration
 
-All configuration is via environment variables with local dev defaults:
+All configuration is via environment variables with Docker Compose defaults:
 
 | Variable           | Default                                                          | Description                                    |
 | ------------------ | ---------------------------------------------------------------- | ---------------------------------------------- |
 | `PORT`             | `8080`                                                           | HTTP server port                               |
-| `DATABASE_URL`     | `postgres://storm:storm@localhost:5432/stormdata?sslmode=disable` | PostgreSQL connection string                  |
-| `KAFKA_BROKERS`    | `localhost:29092`                                                | Comma-separated list of Kafka broker addresses |
+| `DATABASE_URL`     | `postgres://storm:storm@postgres:5432/stormdata?sslmode=disable` | PostgreSQL connection string                  |
+| `KAFKA_BROKERS`    | `kafka:9092`                                                     | Comma-separated list of Kafka broker addresses |
 | `KAFKA_TOPIC`      | `transformed-weather-data`                                       | Topic to consume enriched events from          |
 | `KAFKA_GROUP_ID`   | `storm-data-api`                                         | Consumer group ID                              |
 | `LOG_LEVEL`        | `info`                                                           | Log level: `debug`, `info`, `warn`, `error`    |

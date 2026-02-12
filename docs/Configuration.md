@@ -7,8 +7,8 @@ All configuration is via environment variables. Every variable has a default sui
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PORT` | `8080` | HTTP server port |
-| `DATABASE_URL` | `postgres://storm:storm@localhost:5432/stormdata?sslmode=disable` | PostgreSQL connection string |
-| `KAFKA_BROKERS` | `localhost:29092` | Kafka broker address |
+| `DATABASE_URL` | `postgres://storm:storm@postgres:5432/stormdata?sslmode=disable` | PostgreSQL connection string |
+| `KAFKA_BROKERS` | `kafka:9092` | Kafka broker address |
 | `KAFKA_TOPIC` | `transformed-weather-data` | Kafka topic to consume |
 | `KAFKA_GROUP_ID` | `storm-data-api` | Kafka consumer group ID |
 | `LOG_LEVEL` | `info` | Log level: `debug`, `info`, `warn`, `error` |
