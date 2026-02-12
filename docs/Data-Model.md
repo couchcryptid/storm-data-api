@@ -75,7 +75,7 @@ Nested JSON fields are flattened in PostgreSQL:
 | JSON Path | Database Column |
 |-----------|----------------|
 | `id` | `id` |
-| `type` | `type` |
+| `type` | `event_type` |
 | `geo.lat` | `geo_lat` |
 | `geo.lon` | `geo_lon` |
 | `measurement.magnitude` | `measurement_magnitude` |
@@ -95,8 +95,8 @@ Nested JSON fields are flattened in PostgreSQL:
 
 ## Mock Data Summary
 
-The mock file contains 30 storm reports from April 26, 2024:
+The mock file contains 271 storm reports from April 26, 2024:
 
-- **10 hail** reports across TX, IA, NE, CO
-- **10 tornado** reports across OK, NE, TX
-- **10 wind** reports across OK, NV, NE, TX
+- **79 hail** reports
+- **149 tornado** reports
+- **43 wind** reports

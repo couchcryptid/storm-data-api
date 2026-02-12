@@ -85,7 +85,7 @@ Manages the pgx connection pool, runs embedded SQL migrations on startup, and pr
 ```sql
 CREATE TABLE storm_reports (
     id                          TEXT PRIMARY KEY,
-    type                        TEXT NOT NULL,
+    event_type                  TEXT NOT NULL,
     geo_lat                     DOUBLE PRECISION NOT NULL,
     geo_lon                     DOUBLE PRECISION NOT NULL,
     measurement_magnitude       DOUBLE PRECISION NOT NULL,
@@ -115,10 +115,10 @@ CREATE TABLE storm_reports (
 | Index | Columns | Purpose |
 |-------|---------|---------|
 | `idx_event_time` | `event_time` | Date range queries, ORDER BY |
-| `idx_type` | `type` | Filter by event type (hail, tornado, wind) |
+| `idx_event_type` | `event_type` | Filter by event type (hail, tornado, wind) |
 | `idx_state` | `location_state` | Filter by state |
 | `idx_severity` | `measurement_severity` | Filter by severity level |
-| `idx_type_state_time` | `type, location_state, event_time` | Composite for the typical "type + state + time" filter |
+| `idx_event_type_state_time` | `event_type, location_state, event_time` | Composite for the typical "type + state + time" filter |
 | `idx_geo` | `geo_lat, geo_lon` | Bounding box pre-filter for radius queries |
 
 ## Design Decisions

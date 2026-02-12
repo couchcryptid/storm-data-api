@@ -43,13 +43,16 @@ func discardLogger() *slog.Logger {
 	return slog.New(slog.NewTextHandler(io.Discard, nil))
 }
 
-// wideFilter returns a filter with a time window that covers all mock data.
+// wideFilter returns a filter with a time window that covers all mock data
+// and a default page size matching the GraphQL layer's MaxPageSize.
 func wideFilter() *model.StormReportFilter {
+	limit := graph.MaxPageSize
 	return &model.StormReportFilter{
 		TimeRange: model.TimeRange{
 			From: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 			To:   time.Date(2030, 1, 1, 0, 0, 0, 0, time.UTC),
 		},
+		Limit: &limit,
 	}
 }
 
@@ -373,7 +376,7 @@ func TestStoreSortingAndPagination(t *testing.T) {
 
 	t.Run("offset beyond total", func(t *testing.T) {
 		f := wideFilter()
-		offset := 100
+		offset := 300
 		f.Offset = &offset
 		reports, totalCount, err := s.ListStormReports(ctx, f)
 		require.NoError(t, err)

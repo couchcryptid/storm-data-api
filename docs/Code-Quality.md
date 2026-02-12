@@ -36,6 +36,30 @@ Three layers protect against expensive or abusive queries:
 
 All adapters (Kafka consumer, HTTP handlers, database pool) accept `*slog.Logger` and metrics via their constructors. No global state, no service locators. Every component is testable in isolation.
 
+## What the Codebase Reveals
+
+The API's code reveals priorities around query flexibility, safety, and operational simplicity.
+
+### The schema drives everything
+
+`schema.graphqls` is the single source of truth. Domain models bind directly to it via `gqlgen.yml`. The database column layout mirrors the JSON message shape. There's only one custom field resolver (`eventType` bridging the `type` JSON field to the GraphQL `eventType` name). This means most feature changes start and end in the schema file -- add a type, run `go generate`, write the store query, done. The architecture is optimized for schema evolution, not code flexibility.
+
+### Queries are bounded, not trusted
+
+Three protection layers (complexity budget, depth limit, concurrency semaphore) reject expensive queries before they reach the database. The page size is capped at 20. This isn't paranoia -- it's the natural consequence of exposing a flexible GraphQL API to automated pipelines. The protections ensure that adding a new query capability doesn't require auditing every possible client query pattern.
+
+### The store is the only layer that matters
+
+Resolvers are intentionally thin -- validate, delegate, assemble. The store handles dynamic WHERE clause construction, Haversine radius filtering, CTE-based aggregations, and batch inserts. This means performance changes happen in exactly one place (the store), and GraphQL schema changes don't cascade into business logic changes.
+
+### Field-aware execution avoids waste
+
+The resolver inspects which fields the client requested and only runs the corresponding database queries in parallel via `errgroup`. A dashboard that only needs map markers never triggers the aggregation queries. This means adding new top-level response fields is safe -- existing clients pay zero cost for fields they don't request.
+
+### Idempotency is structural, not logical
+
+`ON CONFLICT (id) DO NOTHING` with deterministic SHA-256 IDs means the write path has no deduplication logic. Duplicate Kafka messages are handled by the database constraint, not application code. This means Kafka consumer restarts, rebalances, and replays are safe by default -- no additional coordination or state management needed.
+
 ## Static Analysis
 
 ### golangci-lint
