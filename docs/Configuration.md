@@ -19,7 +19,7 @@ All configuration is via environment variables. Every variable has a default sui
 
 ## Shared Parsers
 
-Several environment variables use parsers from the [storm-data-shared](https://github.com/couchcryptid/storm-data-shared/wiki/Configuration) library:
+Several environment variables use parsers from the [storm-data-shared](https://github.com/couchcryptid/storm-data-shared/wiki/Architecture) library:
 
 | Variable | Shared Parser |
 |----------|--------------|
@@ -37,6 +37,7 @@ The Compose stack uses per-service env files to keep credentials out of `compose
 
 | File | Service | Contents |
 |------|---------|----------|
+| `.env` | `storm-data-api` | `DATABASE_URL`, `KAFKA_BROKERS` |
 | `.env.postgres` | `postgres` | `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` |
 | `.env.kafka` | `kafka` | KRaft configuration variables |
 
@@ -82,7 +83,7 @@ docker run -e DATABASE_URL=postgres://user:pass@host:5432/db \
 
 ## Related
 
-- [Shared Configuration](https://github.com/couchcryptid/storm-data-shared/wiki/Configuration) -- shared parsers for Kafka, batch, and shutdown settings
-- [ETL Configuration](https://github.com/couchcryptid/storm-data-etl/wiki/Configuration) -- upstream Kafka topic and enrichment settings
+- [Shared Architecture](https://github.com/couchcryptid/storm-data-shared/wiki/Architecture) -- shared parsers for Kafka, batch, and shutdown settings
+- [ETL Architecture](https://github.com/couchcryptid/storm-data-etl/wiki/Architecture) -- upstream configuration and enrichment settings
 - [[Architecture]] -- design decisions and query protection layers
 - [[Development]] -- build, test, lint, CI, and project conventions

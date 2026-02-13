@@ -18,7 +18,7 @@ Handles all PostgreSQL interactions, split into three focused files:
 
 - **`store.go`** -- Store type, `InsertStormReport(s)`, `ListStormReports`, `LastUpdated`, and row scanning
 - **`querybuilder.go`** -- Dynamic WHERE clause construction from filter structs, geo/haversine calculations, bounding box pre-filters, sorting helpers
-- **`aggregations.go`** -- CTE-based aggregation query (`Aggregations`), result types (`AggResult`, `EventTypeGroup`, `StateGroup`, `TimeGroup`)
+- **`aggregations.go`** -- CTE-based aggregation query (`Aggregations`), result types (`AggResult`, `EventTypeGroup`, `StateGroup`, `CountyGroup`, `TimeGroup`)
 
 The database schema flattens the nested JSON structure — `geo.lat`/`geo.lon` become `geo_lat`/`geo_lon` columns, `location.*` fields become `location_*` columns, and `measurement.*` fields become `measurement_*` columns.
 
@@ -95,7 +95,7 @@ CREATE TABLE storm_reports (
 
 The GraphQL schema is defined in `.graphqls` files. gqlgen generates the execution engine, but domain models (`internal/model`) are bound directly via `gqlgen.yml` rather than using generated model types.
 
-**Why**: The schema is the API contract — frontend developers can read it without knowing Go. Direct model binding eliminates a translation layer between graph types and domain types. Only one field resolver (`eventType` → `type`) is needed to bridge a naming difference.
+**Why**: The schema is the API contract — frontend developers can read it without knowing Go. Direct model binding eliminates a translation layer between graph types and domain types. Only one field resolver (`eventType`) is needed to satisfy gqlgen's interface requirement for the `StormReport` type.
 
 ### Thin Resolvers
 
@@ -107,7 +107,7 @@ Resolvers contain no business logic. They validate input, delegate to the store,
 
 The resolver inspects which GraphQL fields were requested (`collectFields`) and only runs queries for those fields, using `errgroup` for parallel execution.
 
-**Why**: A typical `stormReports` query runs up to 3 parallel database calls (reports, aggregations, meta). If the client only requests `reports`, the aggregation and meta queries never execute. This avoids unnecessary database work while keeping the resolver simple.
+**Why**: A typical `stormReports` query runs up to 3 parallel operations (reports, aggregations, meta) executing up to 4 database queries. If the client only requests `reports`, the aggregation and meta queries never execute. This avoids unnecessary database work while keeping the resolver simple.
 
 ### Dynamic WHERE Clause Building
 
@@ -153,7 +153,7 @@ The consumer fetches messages in time-bounded batches (configurable via `BATCH_S
 
 ## Capacity
 
-SPC data volumes are small (~1,000--5,000 records/day during storm season). The Kafka consumer processes an entire day's data in under 1 minute. The GraphQL read path executes 5 parallel database queries per filter via `errgroup`, typically completing in 2--50 ms. Six indexes cover the primary query patterns (see above).
+SPC data volumes are small (~1,000--5,000 records/day during storm season). The Kafka consumer processes an entire day's data in under 1 minute. The GraphQL read path executes up to 4 database queries in 3 parallel goroutines via `errgroup`, typically completing in 2--50 ms. Six indexes cover the primary query patterns (see above).
 
 The 256 MB container memory limit provides 4--12x headroom over the ~20--60 MB steady-state footprint. The write path is over-provisioned for expected load; read path performance depends on dataset size and query complexity.
 
@@ -164,6 +164,6 @@ For horizontal scaling on the write path, deploy multiple instances with Kafka c
 - [System Architecture](https://github.com/couchcryptid/storm-data-system/wiki/Architecture) -- full pipeline design, deployment topology, and improvement roadmap
 - [ETL Architecture](https://github.com/couchcryptid/storm-data-etl/wiki/Architecture) -- upstream service that publishes enriched events to Kafka
 - [Shared Architecture](https://github.com/couchcryptid/storm-data-shared/wiki/Architecture) -- shared library packages used by the API
-- [[API Reference]] -- GraphQL schema, types, filters, and example queries
 - [[Configuration]] -- environment variables and operational endpoints
+- [[API Reference]] -- GraphQL schema, types, filters, and example queries
 - [[Development]] -- build, test, lint, CI, and project conventions

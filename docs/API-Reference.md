@@ -86,7 +86,7 @@ The top-level result returned by `stormReports`.
 |-------|------|-------------|
 | `magnitude` | `Float!` | Event magnitude (interpretation depends on `unit`) |
 | `unit` | `String!` | Magnitude unit: `in` (hail inches), `mph` (wind speed), `f_scale` (tornado) |
-| `severity` | `String` | Severity level (nullable; e.g., `moderate`, `severe`) |
+| `severity` | `String` | Severity classification: `minor`, `moderate`, `severe`, or `extreme`. Null when magnitude is 0 or unknown |
 
 ### Geo
 
@@ -180,7 +180,7 @@ The top-level result returned by `stormReports`.
 | Field | Type | Description |
 |-------|------|-------------|
 | `from` | `DateTime!` | Events starting at or after this time |
-| `to` | `DateTime!` | Events starting before this time (`to` must be after `from`) |
+| `to` | `DateTime!` | Events starting at or before this time, inclusive (`to` must be after `from`) |
 
 ### GeoRadiusFilter
 

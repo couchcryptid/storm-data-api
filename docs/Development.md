@@ -44,11 +44,11 @@ Runs unit tests with the race detector enabled (`-race -count=1`). Unit tests va
 
 | Test | What it verifies |
 | ---- | ---------------- |
-| `TestLoadMockData` | Mock JSON deserializes into 30 `StormReport` structs |
-| `TestMockDataTypes` | 10 hail, 10 tornado, 10 wind reports |
+| `TestLoadMockData` | Mock JSON deserializes into 271 `StormReport` structs |
+| `TestMockDataTypes` | 79 hail, 149 tornado, 43 wind reports |
 | `TestMockDataFields` | All required fields are populated (ID, coordinates, state, event_time, source_office) |
 | `TestMockDataOptionalFields` | Optional fields (`severity`, `distance`) are present on some but not all records |
-| `TestMockDataHailReport` | Specific field values for `hail-1` match expected data |
+| `TestMockDataHailReport` | San Saba TX 1.25" hail report matches expected field values |
 | `TestSortFieldIsValid` | `SortField` enum validates known values and rejects invalid/lowercase strings |
 | `TestSortFieldString` | `SortField.String()` returns correct uppercase representation |
 | `TestSortOrderIsValid` | `SortOrder` enum validates `ASC`/`DESC` and rejects invalid values |
@@ -72,13 +72,13 @@ make test-integration
 
 | Test | What it verifies |
 | ---- | ---------------- |
-| `TestStoreInsertAndQuery` | Insert all 30 mock reports, then test: get by ID, list all, filter by type, filter by state, geo radius search, get non-existent returns nil |
+| `TestStoreInsertAndQuery` | Insert all 271 mock reports, then test: get by ID, list all, filter by type, filter by state, geo radius search, get non-existent returns nil |
 | `TestStoreAggregations` | `CountByType` (3 groups, max magnitude), `CountByState` (with county sub-groups, sum validation), `CountByHour` (bucket totals), `LastUpdated`, `CountByType` with type filter |
 | `TestStoreFilters` | Severity filter, multiple severities, counties, `minMagnitude`, combined filters (type + state + severity), empty result, multiple types |
 | `TestStoreSortingAndPagination` | Sort by magnitude DESC/ASC, sort by state, limit, offset with page comparison, offset beyond total |
-| `TestGraphQLEndpoint` | Full GraphQL query: list all (30), filter by type (10 hail), get single report by ID with nested fields |
+| `TestGraphQLEndpoint` | Full GraphQL query: list all (271 total), filter by type (79 hail) |
 | `TestGraphQLAggregations` | Full GraphQL response: `totalCount`, `byType` with counts, `byState` with county sub-groups, `byHour` bucket totals, `lastUpdated`, `dataLagMinutes` |
-| `TestKafkaConsumerIntegration` | Produce 30 mock messages to Kafka, consume them, insert to Postgres, verify all 30 are in the database |
+| `TestKafkaConsumerIntegration` | Produce 271 mock messages to Kafka, consume them, insert to Postgres, verify all 271 are in the database |
 
 ### Container Images
 
@@ -101,12 +101,12 @@ make lint
 
 Uses `golangci-lint` with the configuration in `.golangci.yml`. Enabled linters include:
 
-- `errcheck`, `govet`, `staticcheck` -- correctness
-- `gosec`, `sqlclosecheck`, `noctx` -- security
+- `bodyclose`, `errorlint`, `gosec`, `noctx`, `sqlclosecheck` -- security and correctness
 - `gocritic`, `revive` -- style
-- `misspell`, `unparam`, `errname` -- hygiene
+- `misspell`, `unparam`, `errname`, `testifylint` -- hygiene
 - `prealloc`, `unconvert` -- performance
 - `exhaustive` -- completeness
+- `gocyclo` -- complexity (threshold: 15)
 
 ## Formatting
 
@@ -124,12 +124,14 @@ The `.pre-commit-config.yaml` configures hooks that run on every commit:
 - End-of-file newline
 - YAML and JSON validation
 - Merge conflict markers
+- Large file detection
 - Private key detection (gitleaks)
 - `gofmt` and `goimports`
 - `go vet` and `go build`
 - `golangci-lint`
 - GraphQL schema linting
 - `yamllint`
+- `markdownlint`
 
 ## CI Pipeline
 
@@ -140,6 +142,7 @@ The `.github/workflows/ci.yml` workflow runs on pushes and pull requests to `mai
 | `test-unit` | `make test-unit` (unit tests with race detector) |
 | `lint` | `make lint` (golangci-lint with the project config) |
 | `build` | `make build` (compile check) |
+| `sonarcloud` | Unit tests with coverage + SonarCloud scan |
 
 A separate `release.yml` workflow (triggered by CI success on `main`) handles versioning, GitHub releases, and Docker image publishing.
 
@@ -147,7 +150,7 @@ A separate `release.yml` workflow (triggered by CI success on `main`) handles ve
 
 - **Schema-first GraphQL**: The schema in `schema.graphqls` is the source of truth. Run `make generate` after schema changes.
 - **Domain logic is pure**: The `model` package has no infrastructure imports.
-- **Interfaces defined by consumers**: The `store` package defines the query interface used by GraphQL resolvers.
+- **Concrete store dependency**: Resolvers depend on `*store.Store` directly. The store is the single source of all data access logic.
 - **Adapter constructor injection**: All adapters (Kafka, HTTP, database) accept `*slog.Logger` via their constructors for consistent, testable logging.
 - **Embedded migrations**: SQL migrations in `internal/database/migrations/` are embedded via `//go:embed` and run automatically on startup.
 
@@ -155,6 +158,6 @@ A separate `release.yml` workflow (triggered by CI success on `main`) handles ve
 
 - [System Development](https://github.com/couchcryptid/storm-data-system/wiki/Development) -- multi-repo workflow, CI conventions, and cross-service patterns
 - [Shared Development](https://github.com/couchcryptid/storm-data-shared/wiki/Development) -- shared library development and versioning
-- [[Configuration]] -- environment variables and operational endpoints
 - [[Architecture]] -- schema-first GraphQL, query protection, and embedded migrations
+- [[Configuration]] -- environment variables and operational endpoints
 - [[API Reference]] -- GraphQL types, queries, filter options

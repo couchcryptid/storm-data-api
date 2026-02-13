@@ -1,4 +1,4 @@
-**Storm Data GraphQL API**
+**Storm Data API**
 
 - [[Home]]
 - [[Architecture]]

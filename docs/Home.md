@@ -10,7 +10,7 @@ Collector --> Kafka --> ETL --> Kafka --> [API] --> PostgreSQL + GraphQL
 
 **Upstream**: The [ETL service](https://github.com/couchcryptid/storm-data-etl/wiki) publishes enriched events to the `transformed-weather-data` topic.
 
-Uses the [storm-data-shared](https://github.com/couchcryptid/storm-data-shared/wiki) library for logging, health endpoints, and config parsing. For the full pipeline architecture, see the [system wiki](https://github.com/couchcryptid/storm-data-system/wiki).
+Uses the [storm-data-shared](https://github.com/couchcryptid/storm-data-shared/wiki) library for logging, health endpoints, config parsing, and retry logic. For the full pipeline architecture, see the [system wiki](https://github.com/couchcryptid/storm-data-system/wiki).
 
 ## Pages
 
